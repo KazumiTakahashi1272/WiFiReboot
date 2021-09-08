@@ -83,6 +83,7 @@ void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 	//DDX_Control(pDX, IDC_EDIT_SSID, m_ctrlEditSsid);
 	DDX_Control(pDX, IDC_CB_SSID, m_ctrlCbSSID);
 	DDX_Control(pDX, IDC_WIFI_REBOOT, m_ctrlWifiReboot);
+	DDX_Control(pDX, IDC_REBOOT_PROG, m_ctrlRebootProg);
 }
 
 BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
@@ -405,6 +406,8 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 {
 	UpdateData();
 
+	m_ctrlRebootProg.SetRange( 0, 3 );
+
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
 
 	CString str;
@@ -417,13 +420,15 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	cmd3 += ssid;
 
-	RunCmdProc( cmd1 );
-	RunCmdProc( cmd2 );
-	RunCmdProc( cmd3 );
+	RunCmdProc( cmd1 ); m_ctrlRebootProg.SetPos( 1 );
+	RunCmdProc( cmd2 );	m_ctrlRebootProg.SetPos( 2 );
+	RunCmdProc( cmd3 );	m_ctrlRebootProg.SetPos( 3 );
 
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );
 
 	MessageBox( "Wi-Fi ‚ÌÄ‹N“®‚ğ‚İ‚Ü‚µ‚½", "Wi-FiÄ‹N“®", MB_OK|MB_ICONASTERISK );
+
+	m_ctrlRebootProg.SetPos( 0 );
 }
 
 DWORD CWiFiRebootDlg::RunCmdProc(string cmd)

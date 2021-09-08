@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>       // ヘッダファイルインクルード
 #include "xpbutton.h"
+#include "afxcmn.h"
 using namespace std;         //  名前空間指定
 
 
@@ -53,4 +54,5 @@ private:
 public:
 	CComboBox m_ctrlCbSSID;
 	CXPButton m_ctrlWifiReboot;
+	CProgressCtrl m_ctrlRebootProg;
 };
