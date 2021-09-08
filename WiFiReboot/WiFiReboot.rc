@@ -77,16 +77,16 @@ IDR_MAINFRAME           ICON                    "res\\WiFiReboot.ico"
 // Dialog
 //
 
-IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 217, 59
+IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 219, 126
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Wi-Fi アダプタの再起動"
 FONT 9, "MS UI Gothic", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "キャンセル",IDCANCEL,157,7,50,36
-    LTEXT           "SSID：",IDC_STATIC,7,11,19,8
-    EDITTEXT        IDC_EDIT_SSID,27,7,120,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "再起動",IDC_WIFI_REBOOT,7,30,140,14
+    PUSHBUTTON      "キャンセル",IDCANCEL,157,7,50,50
+    PUSHBUTTON      "WI-Fi 再起動",IDC_WIFI_REBOOT,7,7,145,20
+    COMBOBOX        IDC_CB_SSID,7,47,145,60,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "再起動するWiFiのSSID",IDC_STATIC,7,38,65,8
 END
 
 
@@ -96,8 +96,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,12
- PRODUCTVERSION 1,0,0,12
+ FILEVERSION 1,3,0,22
+ PRODUCTVERSION 1,3,0,22
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -115,12 +115,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.0.0.12"
+            VALUE "FileVersion", "1.3.0.22"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.0.0.12"
+            VALUE "ProductVersion", "1.3.0.22"
         END
     END
     BLOCK "VarFileInfo"
@@ -141,9 +141,9 @@ BEGIN
     IDD_WIFIREBOOT_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 210
+        RIGHTMARGIN, 212
         TOPMARGIN, 7
-        BOTTOMMARGIN, 52
+        BOTTOMMARGIN, 118
     END
 END
 #endif    // APSTUDIO_INVOKED

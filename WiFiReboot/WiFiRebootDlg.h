@@ -5,6 +5,13 @@
 #pragma once
 #include "afxwin.h"
 
+#include <windows.h>
+#include <wlanapi.h>
+#include <objbase.h>
+#include <wtypes.h>
+
+#include <cstdio>
+#include <iostream>
 #include <string>       // ヘッダファイルインクルード
 using namespace std;         //  名前空間指定
 
@@ -22,6 +29,11 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
 
+public:
+	static void WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOID *p);
+
+	void MsgReporter(const char *format, ...);
+	void ErrReporter(const char *format, ...);
 
 // 実装
 protected:
@@ -34,8 +46,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedWifiReboot();
-	CEdit m_ctrlEditSsid;
 
 private:
 	DWORD RunCmdProc(string cmd);
+public:
+	CComboBox m_ctrlCbSSID;
 };
