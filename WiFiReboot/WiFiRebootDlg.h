@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <iostream>
 #include <string>       // ヘッダファイルインクルード
+#include "xpbutton.h"
 using namespace std;         //  名前空間指定
 
 
@@ -51,4 +52,5 @@ private:
 	DWORD RunCmdProc(string cmd);
 public:
 	CComboBox m_ctrlCbSSID;
+	CXPButton m_ctrlWifiReboot;
 };
