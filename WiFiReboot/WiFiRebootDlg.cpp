@@ -454,3 +454,29 @@ DWORD CWiFiRebootDlg::RunCmdProc(string cmd)
 
 	return ret;
 }
+
+BOOL CWiFiRebootDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: ここに特定なコードを追加するか、もしくは基本クラスを呼び出してください。
+    if ( WM_KEYDOWN == pMsg->message )
+	{
+		if ( VK_RETURN == pMsg->wParam )
+		{
+            return FALSE;
+        }
+        else if ( VK_ESCAPE == pMsg->wParam )
+		{
+			return TRUE;
+        }
+        else
+		{
+            return CDialog::PreTranslateMessage( pMsg );
+        }
+    }
+    else
+	{
+        return CDialog::PreTranslateMessage( pMsg );
+    }
+
+	//return CDialog::PreTranslateMessage(pMsg);
+}

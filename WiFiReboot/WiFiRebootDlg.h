@@ -55,4 +55,5 @@ public:
 	CComboBox m_ctrlCbSSID;
 	CXPButton m_ctrlWifiReboot;
 	CProgressCtrl m_ctrlRebootProg;
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
