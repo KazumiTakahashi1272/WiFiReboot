@@ -84,6 +84,7 @@ void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CB_SSID, m_ctrlCbSSID);
 	DDX_Control(pDX, IDC_WIFI_REBOOT, m_ctrlWifiReboot);
 	DDX_Control(pDX, IDC_REBOOT_PROG, m_ctrlRebootProg);
+	DDX_Control(pDX, IDC_PASSWORD, m_ctrlPsw);
 }
 
 BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
@@ -406,24 +407,34 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 {
 	UpdateData();
 
-	m_ctrlRebootProg.SetRange( 0, 3 );
+	m_ctrlRebootProg.SetRange( 0, 4 );
 
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
+	GetDlgItem(IDC_PASSWORD)->EnableWindow( FALSE );
 
-	CString str;
+	CString str, str2, str3;
 	std::string cmd1( "cmd /c netsh wlan disconnect" );
 	std::string cmd2( "cmd /c powershell Restart-NetAdapter -Name Wi-Fi" );
-	std::string cmd3( "cmd /c netsh wlan connect name=" );
+	std::string cmd3;
+	std::string cmd4( "cmd /c netsh wlan connect name=" );
 
 	m_ctrlCbSSID.GetWindowText( str );
 	std::string ssid( str.GetBuffer() );
 
-	cmd3 += ssid;
+	m_ctrlPsw.GetWindowText( str2 );
+	std::string psw( str2.GetBuffer() );
+
+	str3.Format( "cmd /c netsh wlan set profileparameter name=\"%s\" keymaterial=\"%s\" connectionmode=auto", ssid.c_str(), psw.c_str() );
+
+	cmd3 = str3;
+	cmd4 += ssid;
 
 	RunCmdProc( cmd1 ); m_ctrlRebootProg.SetPos( 1 );
 	RunCmdProc( cmd2 );	m_ctrlRebootProg.SetPos( 2 );
 	RunCmdProc( cmd3 );	m_ctrlRebootProg.SetPos( 3 );
+	RunCmdProc( cmd4 );	m_ctrlRebootProg.SetPos( 4 );
 
+	GetDlgItem(IDC_PASSWORD)->EnableWindow( TRUE );
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );
 
 	MessageBox( "Wi-Fi ‚ÌÄ‹N“®‚ğ‚İ‚Ü‚µ‚½", "Wi-FiÄ‹N“®", MB_OK|MB_ICONASTERISK );

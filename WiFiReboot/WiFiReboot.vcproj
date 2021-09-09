@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EditFlat.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -232,6 +236,10 @@
 			>
 			<File
 				RelativePath=".\CJFlatComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditFlat.h"
 				>
 			</File>
 			<File

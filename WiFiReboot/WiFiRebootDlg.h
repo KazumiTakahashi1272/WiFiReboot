@@ -16,6 +16,7 @@
 #include "xpbutton.h"
 #include "afxcmn.h"
 #include "CJFlatComboBox.h"
+#include "EditFlat.h"
 
 using namespace std;         //  –¼‘O‹óŠÔŽw’è
 
@@ -58,4 +59,5 @@ public:
 	CXPButton m_ctrlWifiReboot;
 	CProgressCtrl m_ctrlRebootProg;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CEditFlat m_ctrlPsw;
 };
