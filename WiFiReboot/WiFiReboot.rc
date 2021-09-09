@@ -96,8 +96,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,1,32
- PRODUCTVERSION 1,4,1,32
+ FILEVERSION 1,5,0,34
+ PRODUCTVERSION 1,5,0,34
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -115,12 +115,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.4.1.32"
+            VALUE "FileVersion", "1.5.0.34"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.4.1.32"
+            VALUE "ProductVersion", "1.5.0.34"
         END
     END
     BLOCK "VarFileInfo"
