@@ -3,6 +3,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "WiFiRebootDlg.h"
 #include "CJFlatComboBox.h"
 
 #ifdef _DEBUG
@@ -134,7 +135,9 @@ void CCJFlatComboBox::DrawCombo(STATE eState, COLORREF clrTopLeft, COLORREF clrB
 	CRect rcItem;
 	GetClientRect(&rcItem);
 	CDC* pDC = GetDC();
-	
+
+	TRACE("DrawCombo\n");
+
 	// Cover up dark 3D shadow.
 	pDC->Draw3dRect(rcItem, clrTopLeft, clrBottomRight);
 	rcItem.DeflateRect(1,1);
@@ -195,6 +198,11 @@ void CCJFlatComboBox::OnSetFocus()
 
 void CCJFlatComboBox::OnKillFocus() 
 {
+	CString str;
+
+	CWiFiRebootDlg* pApp = (CWiFiRebootDlg*)AfxGetApp()->m_pMainWnd;
+	pApp->OnCbnSelchangeCbSsid();
+
 	m_bHasFocus = FALSE;
 	DrawCombo( normal, m_clrBtnFace, m_clrBtnFace );
 }

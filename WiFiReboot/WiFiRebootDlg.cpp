@@ -19,7 +19,6 @@
 #define new DEBUG_NEW
 #endif
 
-
 // CWiFiRebootDlg ダイアログ
 
 static bool bScanWait = true;
@@ -92,6 +91,7 @@ BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_WIFI_REBOOT, &CWiFiRebootDlg::OnBnClickedWifiReboot)
+	ON_CBN_SELCHANGE(IDC_CB_SSID, &CWiFiRebootDlg::OnCbnSelchangeCbSsid)
 END_MESSAGE_MAP()
 
 
@@ -107,6 +107,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
 	// TODO: 初期化をここに追加します。
+	OnCbnSelchangeCbSsid();
+
 	unsigned int i, j, k;
 
 	HANDLE hClient = NULL;
@@ -319,8 +321,9 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	}
 
 	m_ctrlCbSSID.SetCurSel( 0 );
+	GetDlgItem(IDC_CB_SSID)->SetFocus();
 
-	return TRUE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+	return FALSE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }
 
 void CWiFiRebootDlg::MsgReporter(const char *format, ... )
@@ -405,6 +408,8 @@ HCURSOR CWiFiRebootDlg::OnQueryDragIcon()
 
 void CWiFiRebootDlg::OnBnClickedWifiReboot()
 {
+	CWiFiRebootApp* pApp = (CWiFiRebootApp*)AfxGetApp();
+
 	UpdateData();
 
 	m_ctrlRebootProg.SetRange( 0, 4 );
@@ -424,6 +429,14 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 	m_ctrlPsw.GetWindowText( str2 );
 	std::string psw( str2.GetBuffer() );
 
+	m_crypto.m_encryptKey = "Sample_Key";	// 暗号化キー文字列
+	m_crypto.m_hKey = keyHCU;
+	m_crypto.m_subKey = "SOFTWARE\\WiFi-Reboot\\Crypto SSID List";
+	m_crypto.m_valueKey = ssid;
+	m_hCrypto = cryptoOpenRegistry( &m_crypto );
+	cryptoWriteRegistry( m_hCrypto, psw.c_str() );
+	cryptoCloseRegistry( m_hCrypto );
+
 	str3.Format( "cmd /c netsh wlan set profileparameter name=\"%s\" keymaterial=\"%s\" connectionmode=auto", ssid.c_str(), psw.c_str() );
 
 	cmd3 = str3;
@@ -438,7 +451,6 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );
 
 	MessageBox( "Wi-Fi の再起動を試みました", "Wi-Fi再起動", MB_OK|MB_ICONASTERISK );
-
 	m_ctrlRebootProg.SetPos( 0 );
 }
 
@@ -488,6 +500,28 @@ BOOL CWiFiRebootDlg::PreTranslateMessage(MSG* pMsg)
 	{
         return CDialog::PreTranslateMessage( pMsg );
     }
-
-	//return CDialog::PreTranslateMessage(pMsg);
 }
+
+void CWiFiRebootDlg::OnCbnSelchangeCbSsid()
+{
+	CString str;
+	string pass;
+
+	pass.resize( 128, ' ' );
+
+	m_ctrlCbSSID.GetWindowText( str );
+	std::string ssid( str.GetBuffer() );
+
+	m_crypto.m_encryptKey = "Sample_Key";	// 暗号化キー文字列
+	m_crypto.m_hKey = keyHCU;
+	m_crypto.m_subKey = "SOFTWARE\\WiFi-Reboot\\Crypto SSID List";
+	m_crypto.m_valueKey = ssid;
+	m_hCrypto = cryptoOpenRegistry( &m_crypto );
+	if ( cryptoReadRegistry(m_hCrypto, pass) == false )
+		m_ctrlPsw.SetWindowText( " " );
+	else
+		m_ctrlPsw.SetWindowText( pass.c_str() );
+
+	cryptoCloseRegistry( m_hCrypto );
+}
+

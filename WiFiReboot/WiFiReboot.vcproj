@@ -46,6 +46,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="D:\Samples\Tutorial\CryptoRegApp\CryptoRegApp"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -68,6 +69,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="D:\Samples\Tutorial\CryptoRegApp\Debug\CryptoReg.lib"
 				LinkIncremental="2"
 				UACExecutionLevel="2"
 				GenerateDebugInformation="true"
@@ -127,6 +129,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="D:\Samples\Tutorial\CryptoRegApp\CryptoRegApp"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"

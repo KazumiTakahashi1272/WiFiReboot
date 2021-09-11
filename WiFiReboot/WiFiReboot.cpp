@@ -77,3 +77,9 @@ BOOL CWiFiRebootApp::InitInstance()
 	//  アプリケーションを終了するために FALSE を返してください。
 	return FALSE;
 }
+
+int CWiFiRebootApp::ExitInstance()
+{
+	// TODO: ここに特定なコードを追加するか、もしくは基本クラスを呼び出してください。
+	return CWinAppEx::ExitInstance();
+}

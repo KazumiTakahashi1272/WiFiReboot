@@ -9,7 +9,9 @@
 #endif
 
 #include "resource.h"		// メイン シンボル
+#include "D:\Samples\Tutorial\CryptoRegApp\CryptoRegApp\CryptoReg.h"
 
+#pragma comment(lib, "CryptoReg.lib")
 
 // CWiFiRebootApp:
 // このクラスの実装については、WiFiReboot.cpp を参照してください。
@@ -21,12 +23,14 @@ public:
 	CWiFiRebootApp();
 
 // オーバーライド
-	public:
+public:
 	virtual BOOL InitInstance();
 
 // 実装
 
 	DECLARE_MESSAGE_MAP()
+	virtual int ExitInstance();
+
 };
 
 extern CWiFiRebootApp theApp;
