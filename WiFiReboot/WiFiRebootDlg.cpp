@@ -518,7 +518,7 @@ void CWiFiRebootDlg::OnCbnSelchangeCbSsid()
 	m_crypto.m_valueKey = ssid;
 	m_hCrypto = cryptoOpenRegistry( &m_crypto );
 	if ( cryptoReadRegistry(m_hCrypto, pass) == false )
-		m_ctrlPsw.SetWindowText( " " );
+		m_ctrlPsw.SetWindowText( "" );
 	else
 		m_ctrlPsw.SetWindowText( pass.c_str() );
 
