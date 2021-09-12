@@ -412,7 +412,7 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	UpdateData();
 
-	m_ctrlRebootProg.SetRange( 0, 4 );
+	m_ctrlRebootProg.SetRange( 0, 6 );
 
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
 	GetDlgItem(IDC_PASSWORD)->EnableWindow( FALSE );
@@ -422,6 +422,8 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 	std::string cmd2( "cmd /c powershell Restart-NetAdapter -Name Wi-Fi" );
 	std::string cmd3;
 	std::string cmd4( "cmd /c netsh wlan connect name=" );
+	std::string cmd5( "cmd /c netsh interface set interface Wi-Fi disable" );
+	std::string cmd6( "cmd /c netsh interface set interface Wi-Fi enabled" );
 
 	m_ctrlCbSSID.GetWindowText( str );
 	std::string ssid( str.GetBuffer() );
@@ -437,15 +439,17 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 	cryptoWriteRegistry( m_hCrypto, psw.c_str() );
 	cryptoCloseRegistry( m_hCrypto );
 
-	str3.Format( "cmd /c netsh wlan set profileparameter name=\"%s\" keymaterial=\"%s\" connectionmode=auto", ssid.c_str(), psw.c_str() );
+	str3.Format( "cmd /c netsh wlan set profileparameter name=%s keymaterial=%s connectionmode=auto", ssid.c_str(), psw.c_str() );
 
 	cmd3 = str3;
 	cmd4 += ssid;
 
-	RunCmdProc( cmd1 ); m_ctrlRebootProg.SetPos( 1 );
-	RunCmdProc( cmd2 );	m_ctrlRebootProg.SetPos( 2 );
-	RunCmdProc( cmd3 );	m_ctrlRebootProg.SetPos( 3 );
-	RunCmdProc( cmd4 );	m_ctrlRebootProg.SetPos( 4 );
+	RunCmdProc( cmd1 ); Sleep( 1000 ); m_ctrlRebootProg.SetPos( 1 );
+	RunCmdProc( cmd2 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 2 );
+	RunCmdProc( cmd3 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 3 );
+	RunCmdProc( cmd4 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 4 );
+	RunCmdProc( cmd5 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 5 );
+	RunCmdProc( cmd6 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 6 );
 
 	GetDlgItem(IDC_PASSWORD)->EnableWindow( TRUE );
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );

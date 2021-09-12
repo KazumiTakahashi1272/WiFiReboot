@@ -136,8 +136,6 @@ void CCJFlatComboBox::DrawCombo(STATE eState, COLORREF clrTopLeft, COLORREF clrB
 	GetClientRect(&rcItem);
 	CDC* pDC = GetDC();
 
-	TRACE("DrawCombo\n");
-
 	// Cover up dark 3D shadow.
 	pDC->Draw3dRect(rcItem, clrTopLeft, clrBottomRight);
 	rcItem.DeflateRect(1,1);
