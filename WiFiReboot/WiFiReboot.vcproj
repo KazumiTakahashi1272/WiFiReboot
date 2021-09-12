@@ -197,6 +197,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ColorEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ColorStatic.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EditFlat.cpp"
 				>
 			</File>
@@ -240,6 +248,18 @@
 			>
 			<File
 				RelativePath=".\CJFlatComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Color.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ColorEdit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ColorStatic.h"
 				>
 			</File>
 			<File

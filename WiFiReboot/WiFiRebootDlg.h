@@ -18,6 +18,8 @@
 #include "afxcmn.h"
 #include "CJFlatComboBox.h"
 #include "EditFlat.h"
+#include "ColorStatic.h"
+#include "ColorEdit.h"
 
 using namespace std;         //  –¼‘O‹óŠÔŽw’è
 
@@ -68,4 +70,5 @@ public:
 	CEditFlat m_ctrlPsw;
 	afx_msg void OnEnKillfocusPassword();
 	afx_msg void OnCbnSelchangeCbSsid();
+	CColorStatic m_ctrlDesc;
 };

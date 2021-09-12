@@ -84,6 +84,7 @@ void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_WIFI_REBOOT, m_ctrlWifiReboot);
 	DDX_Control(pDX, IDC_REBOOT_PROG, m_ctrlRebootProg);
 	DDX_Control(pDX, IDC_PASSWORD, m_ctrlPsw);
+	DDX_Control(pDX, IDC_STATIC_DESC, m_ctrlDesc);
 }
 
 BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
@@ -108,6 +109,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 	// TODO: ‰Šú‰»‚ð‚±‚±‚É’Ç‰Á‚µ‚Ü‚·B
 	OnCbnSelchangeCbSsid();
+
+	m_ctrlDesc.SetTextColor( LIGHTBLUE );
 
 	unsigned int i, j, k;
 
@@ -161,6 +164,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 			iRet = StringFromGUID2( pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString) );
 			MsgReporter( "  InterfaceGUID[%d]: %ws\n", i, GuidString );
+
+			m_ctrlDesc.SetWindowText( CW2A(pIfInfo->strInterfaceDescription) );
 
 			MsgReporter( "  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription );
 			MsgReporter( "\n" );

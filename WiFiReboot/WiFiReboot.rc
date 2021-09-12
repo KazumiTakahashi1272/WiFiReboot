@@ -77,18 +77,19 @@ IDR_MAINFRAME           ICON                    "res\\WiFiReboot.ico"
 // Dialog
 //
 
-IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 159, 107
+IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 251, 117
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Wi-Fi アダプタの再起動"
 FONT 9, "MS UI Gothic", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "WI-Fi 再起動",IDC_WIFI_REBOOT,7,66,145,25
-    COMBOBOX        IDC_CB_SSID,7,16,145,60,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "再起動するWiFiのSSID：",IDC_STATIC,7,7,68,8
-    CONTROL         "",IDC_REBOOT_PROG,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,92,145,7
-    LTEXT           "パスワード：",IDC_STATIC,7,33,31,8
-    EDITTEXT        IDC_PASSWORD,7,42,145,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "WI-Fi 再起動",IDC_WIFI_REBOOT,7,75,237,25
+    COMBOBOX        IDC_CB_SSID,7,31,237,60,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "再起動するWiFiのSSID：",IDC_STATIC,7,22,68,8
+    CONTROL         "",IDC_REBOOT_PROG,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,102,237,7
+    LTEXT           "パスワード：",IDC_STATIC,7,48,31,8
+    EDITTEXT        IDC_PASSWORD,7,57,237,14,ES_AUTOHSCROLL
+    CTEXT           "スタティック",IDC_STATIC_DESC,7,7,237,11
 END
 
 
@@ -98,8 +99,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,8,0,48
- PRODUCTVERSION 1,8,0,48
+ FILEVERSION 1,9,0,51
+ PRODUCTVERSION 1,9,0,51
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -117,12 +118,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.8.0.48"
+            VALUE "FileVersion", "1.9.0.51"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.8.0.48"
+            VALUE "ProductVersion", "1.9.0.51"
         END
     END
     BLOCK "VarFileInfo"
@@ -143,9 +144,9 @@ BEGIN
     IDD_WIFIREBOOT_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 152
+        RIGHTMARGIN, 244
         TOPMARGIN, 7
-        BOTTOMMARGIN, 99
+        BOTTOMMARGIN, 109
     END
 END
 #endif    // APSTUDIO_INVOKED
