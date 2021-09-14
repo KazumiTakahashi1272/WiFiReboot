@@ -23,12 +23,19 @@
 
 using namespace std;         //  名前空間指定
 
+#include "BtnST.h"
+
 // CWiFiRebootDlg ダイアログ
 class CWiFiRebootDlg : public CDialog
 {
 // コンストラクション
 public:
 	CWiFiRebootDlg(CWnd* pParent = NULL);	// 標準コンストラクタ
+
+	HBITMAP m_hBmp;
+	HRGN m_hClientRgn;
+	HRGN m_hWndRgn;
+	HRGN DIBToRgn(HBITMAP hBmp,COLORREF BkColor,BOOL Direct); // Handle the Skin
 
 // ダイアログ データ
 	enum { IDD = IDD_WIFIREBOOT_DIALOG };
@@ -47,6 +54,9 @@ protected:
 	HICON m_hIcon;
 
 public:
+	CButtonST	m_btnCancel;
+	CButtonST	m_btnMinimize;
+
 	T_CRYPTO_DATA	m_crypto;	// 暗号化情報
 	HANDLE m_hCrypto;
 
@@ -54,6 +64,7 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
+	afx_msg void OnMinimize();
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -71,4 +82,7 @@ public:
 	afx_msg void OnEnKillfocusPassword();
 	afx_msg void OnCbnSelchangeCbSsid();
 	CColorStatic m_ctrlDesc;
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	CColorStatic m_ctrlStaticSsid;
+	CColorStatic m_ctrlStaticPwd;
 };

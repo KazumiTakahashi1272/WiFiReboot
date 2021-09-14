@@ -74,17 +74,24 @@ CWiFiRebootDlg::CWiFiRebootDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CWiFiRebootDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	m_hBmp = (HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_MAIN), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION );
+	m_hClientRgn = CreateEllipticRgn( 33, 34, 34, 35 );
+	m_hWndRgn = DIBToRgn( m_hBmp, 0x00ff00, FALSE );
 }
 
 void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	//DDX_Control(pDX, IDC_EDIT_SSID, m_ctrlEditSsid);
 	DDX_Control(pDX, IDC_CB_SSID, m_ctrlCbSSID);
 	DDX_Control(pDX, IDC_WIFI_REBOOT, m_ctrlWifiReboot);
 	DDX_Control(pDX, IDC_REBOOT_PROG, m_ctrlRebootProg);
 	DDX_Control(pDX, IDC_PASSWORD, m_ctrlPsw);
 	DDX_Control(pDX, IDC_STATIC_DESC, m_ctrlDesc);
+	DDX_Control(pDX, IDCANCEL, m_btnCancel);
+	DDX_Control(pDX, IDC_MINIMIZE, m_btnMinimize);
+	DDX_Control(pDX, IDC_STATIC_SSID, m_ctrlStaticSsid);
+	DDX_Control(pDX, IDC_STATIC_PWD, m_ctrlStaticPwd);
 }
 
 BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
@@ -93,6 +100,8 @@ BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDC_WIFI_REBOOT, &CWiFiRebootDlg::OnBnClickedWifiReboot)
 	ON_CBN_SELCHANGE(IDC_CB_SSID, &CWiFiRebootDlg::OnCbnSelchangeCbSsid)
+	ON_WM_ERASEBKGND()
+	ON_BN_CLICKED(IDC_MINIMIZE, OnMinimize)
 END_MESSAGE_MAP()
 
 
@@ -102,15 +111,29 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
+	if ( m_hWndRgn )
+		SetWindowRgn( m_hWndRgn, TRUE );
+
 	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
 	//  Framework は、この設定を自動的に行います。
 	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
 	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
+	m_btnCancel.SetBitmaps( IDB_CLOSE, RGB(255, 0, 255) );
+	m_btnCancel.DrawBorder( FALSE, TRUE );
+
+	m_btnMinimize.SetBitmaps( IDB_MINIMIZE, RGB(255, 0, 255) );
+	m_btnMinimize.DrawBorder( FALSE, TRUE );
+
 	// TODO: 初期化をここに追加します。
 	OnCbnSelchangeCbSsid();
 
 	m_ctrlDesc.SetTextColor( LIGHTBLUE );
+	m_ctrlDesc.SetBkColor( RGB(175, 199, 223) );
+	m_ctrlStaticSsid.SetBkColor( RGB(175, 199, 223) );
+	m_ctrlStaticPwd.SetBkColor( RGB(175, 199, 223) );
+
+	m_ctrlRebootProg.SetBkColor( RGB(175, 199, 223) );
 
 	unsigned int i, j, k;
 
@@ -411,6 +434,217 @@ HCURSOR CWiFiRebootDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+HRGN CWiFiRebootDlg::DIBToRgn(HBITMAP hBmp, COLORREF BkColor, BOOL Direct)
+{
+	// use to return the handle of the HGRN
+  	HRGN hRgn = NULL;					
+	#define MAX_ALLOC_RECTS  100
+	//the difference of the color
+	COLORREF  Tolerance=0x00101010;
+	if (hBmp)
+	{
+		//creat the dib to save the dc
+		HDC hMemDC = CreateCompatibleDC(NULL);		
+		if (hMemDC)
+		{
+			BITMAP bm;
+			//get the info of the bitmap
+			GetObject(hBmp, sizeof(bm), &bm);	
+
+			BITMAPINFOHEADER BmpInfoh = {					//the struct of the bitmap
+					sizeof(BITMAPINFOHEADER),			// biSize
+					bm.bmWidth,					// biWidth;
+					bm.bmHeight,					// biHeight;
+					1,						// biPlanes;
+					32,						// biBitCount
+					BI_RGB,						// biCompression;
+					0,						// biSizeImage;
+					0,						// biXPelsPerMeter;
+					0,						// biYPelsPerMeter;
+					0,						// biClrUsed;
+					0						// biClrImportant;
+			};
+			//design a void point to point to the bitmap
+			LPVOID pBit32; 
+			//creat a DIB
+			HBITMAP hDib32 = CreateDIBSection(hMemDC, 
+					(BITMAPINFO *)&BmpInfoh, 
+					DIB_RGB_COLORS, &pBit32, NULL, 0);
+			if (hDib32)
+			{
+				//copy dib to DC
+				HBITMAP hOldib32 = (HBITMAP)SelectObject(hMemDC, hDib32);
+				// create a DC to save orgin bitmap
+				HDC hDC = CreateCompatibleDC(hMemDC);
+				if (hDC)
+				{
+					BITMAP bm32;
+					// get the new 34 bit Dib size
+					GetObject(hDib32, sizeof(bm32), &bm32);
+					//make sure the 32Dib's every line pilex's is 4 's times
+					while (bm32.bmWidthBytes % 4)
+						bm32.bmWidthBytes++;
+					//copy the orginal dib to DC
+					HBITMAP holdBmp = (HBITMAP)SelectObject(hDC, hBmp);
+					//copy dib to memory DC
+					BitBlt(hMemDC, 0, 0, bm.bmWidth, bm.bmHeight, hDC, 0, 0, SRCCOPY);
+					DWORD MaxRects = MAX_ALLOC_RECTS;
+					SYSTEM_INFO  Sysinfo;
+					//get memory size
+					GetSystemInfo(&Sysinfo);
+					//make a stack which can chang big
+					//alloct memory
+					HANDLE hRcData=HeapCreate(HEAP_GENERATE_EXCEPTIONS,Sysinfo.dwPageSize, 0);
+					RGNDATA * pRcData=(RGNDATA*)HeapAlloc(hRcData,HEAP_ZERO_MEMORY,
+						sizeof(RGNDATAHEADER)+sizeof(RECT)*MaxRects);
+					 //fill the the RGNDATA struck
+					pRcData->rdh.dwSize = sizeof(RGNDATAHEADER);
+					pRcData->rdh.iType = RDH_RECTANGLES;
+					pRcData->rdh.nCount = pRcData->rdh.nRgnSize = 0;
+					SetRect(&pRcData->rdh.rcBound, MAXLONG, MAXLONG, 0, 0);
+		             		BYTE hr,hg,hb,lr,lg,lb;
+					switch(BkColor)
+					{
+					case RGB(255,255,255):	//if the bkcolor is white
+						hr = GetRValue(BkColor);
+						hg = GetGValue(BkColor);
+						hb = GetBValue(BkColor);
+						lr = min(0xff, hr - GetRValue(Tolerance));
+						lg = min(0xff, hg - GetGValue(Tolerance));
+						lb = min(0xff, hb - GetBValue(Tolerance));
+						break;
+					case RGB(0,0,0):	//if the bkcolor is black
+						lr = GetRValue(BkColor);
+						lg = GetGValue(BkColor);
+						lb = GetBValue(BkColor);
+						hr = min(0xff, lr + GetRValue(Tolerance));
+						hg = min(0xff, lg + GetGValue(Tolerance));
+						hb = min(0xff, lb + GetBValue(Tolerance));
+						break;
+					default:		//if the bkcolor is other color
+						Tolerance=0x111111;
+						lr =max(0, GetRValue(BkColor)-GetRValue(Tolerance));
+						lg = max(0,GetGValue(BkColor)-GetGValue(Tolerance));
+						lb = max(0,GetBValue(BkColor)-GetBValue(Tolerance));
+						hr=min(0xff,GetRValue(BkColor)+GetRValue(Tolerance));
+						hg=min(0xff,GetGValue(BkColor)+GetGValue(Tolerance));
+						hb=min(0xff,GetBValue(BkColor)+GetBValue(Tolerance));
+						break;
+					}
+					// Get the bit point and do the search
+					BYTE *pBits = (BYTE *)bm32.bmBits + (bm32.bmHeight - 1) * bm32.bmWidthBytes;
+					for (int y = 0; y < bm.bmHeight; y++)
+					{
+						for (int x = 0; x < bm.bmWidth; x++)
+						{
+							int x0 = x;
+							DWORD *pColor = (DWORD *)pBits + x;
+							BYTE dr,dg,db;
+							while (x < bm.bmWidth)
+							{
+								dr=GetRValue(*pColor);
+								dg=GetGValue(*pColor);
+								db=GetBValue(*pColor);
+
+								if ((dr>= lr && dr<= hr)&&(dg>=lg&&dg<=hg)&&(db>=lb&&db<=hb))
+								{
+									if(Direct)
+										break;
+									else
+									{
+										pColor++;
+										x++;
+									}
+							  	}
+								else if(Direct)
+								{
+									pColor++;
+									x++;
+								}
+								else
+									break;
+
+							}
+							if (x > x0)
+							{
+								if (pRcData->rdh.nCount >= MaxRects)
+								{
+									MaxRects += MAX_ALLOC_RECTS;
+									//re alloc the stack
+									pRcData=(RGNDATA*)HeapReAlloc(
+									hRcData,HEAP_ZERO_MEMORY,pRcData, 
+									sizeof(RGNDATAHEADER)+sizeof(RECT)*MaxRects);
+								}
+								RECT *pr = (RECT *)&pRcData->Buffer;
+								SetRect(&pr[pRcData->rdh.nCount], x0, y, x, y+1);
+								pRcData->rdh.rcBound.left = x0;
+								pRcData->rdh.rcBound.top = y;
+								pRcData->rdh.rcBound.right = x;
+								pRcData->rdh.rcBound.bottom = y+1;
+								pRcData->rdh.nCount++;
+
+								if (pRcData->rdh.nCount == 3000)
+								{	
+									HRGN tmphRgn = ExtCreateRegion(NULL,
+									sizeof(RGNDATAHEADER) + (sizeof(RECT) * MaxRects),
+									pRcData);
+									if (hRgn)
+									{
+										CombineRgn(hRgn, hRgn, tmphRgn, RGN_OR);
+										DeleteObject(tmphRgn);
+									}
+									else
+										hRgn = tmphRgn;
+									pRcData->rdh.nCount = 0;
+									SetRect(&pRcData->rdh.rcBound, 
+									MAXLONG, MAXLONG, 0, 0);
+								}
+							}
+						}
+
+						// search next line
+						pBits -= bm32.bmWidthBytes;
+					}
+					HRGN tmphRgn = ExtCreateRegion(NULL, 
+							sizeof(RGNDATAHEADER) + (sizeof(RECT) * MaxRects), pRcData);
+					if (hRgn)
+					{
+						CombineRgn(hRgn, hRgn, tmphRgn, RGN_OR);
+						DeleteObject(tmphRgn);
+					}
+					else
+						hRgn = tmphRgn;
+					// make a rect ,use this rect xor to the  BkColor
+					//then we can get the rect we want
+					if(!Direct)
+					{
+						HRGN hRect=CreateRectRgn(0,0,bm.bmWidth,bm.bmHeight);
+				                        if(hRect)
+						{
+							CombineRgn(hRgn,hRgn,hRect,RGN_XOR);
+							DeleteObject(hRect);
+						}
+					    else
+							return NULL;
+					}
+					//release the memory
+					HeapFree(hRcData,HEAP_NO_SERIALIZE,pRcData);
+					SelectObject(hDC, holdBmp);
+					DeleteDC(hDC);
+					DeleteObject(holdBmp);
+				}
+				SelectObject(hMemDC,hOldib32);
+				DeleteDC(hMemDC);
+				DeleteObject(hOldib32);
+				DeleteObject(hDib32);
+			}
+			else
+				DeleteDC(hMemDC);
+		}
+	}
+	return hRgn;
+}
+
 void CWiFiRebootDlg::OnBnClickedWifiReboot()
 {
 	CWiFiRebootApp* pApp = (CWiFiRebootApp*)AfxGetApp();
@@ -534,3 +768,33 @@ void CWiFiRebootDlg::OnCbnSelchangeCbSsid()
 	cryptoCloseRegistry( m_hCrypto );
 }
 
+
+BOOL CWiFiRebootDlg::OnEraseBkgnd(CDC* pDC)
+{
+	if(m_hBmp)
+	{
+		BITMAP bm;
+		GetObject(m_hBmp,sizeof(bm),&bm);
+		HDC hMemdc=CreateCompatibleDC(pDC->m_hDC); 
+		if(hMemdc)
+		{
+		   HBITMAP hOldBmp=(HBITMAP)SelectObject(hMemdc,m_hBmp);
+		   if(hOldBmp)
+		   {
+			   BitBlt(pDC->m_hDC,0,0,bm.bmWidth,bm.bmHeight,hMemdc,0,0,SRCCOPY);
+			   SelectObject(hMemdc,hOldBmp);
+			   DeleteDC(hMemdc);
+			   DeleteObject(hOldBmp);
+			   return TRUE;
+		   }
+		   else
+			 DeleteDC(hMemdc);
+		}
+	}
+	return CDialog::OnEraseBkgnd(pDC);
+}
+
+void CWiFiRebootDlg::OnMinimize() 
+{
+	ShowWindow( SW_MINIMIZE );	
+}
