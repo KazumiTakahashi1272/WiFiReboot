@@ -7,6 +7,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#include "Color.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CButtonST
 
@@ -1479,9 +1481,9 @@ DWORD CButtonST::OnDrawBackground(CDC* pDC, LPCRECT pRect)
 	else
 	{
 		if (m_bIsFocused)
-			crColor = m_crColors[BTNST_COLOR_BK_FOCUS];
+			crColor = BKCOLOR;	//m_crColors[BTNST_COLOR_BK_FOCUS];
 		else
-			crColor = m_crColors[BTNST_COLOR_BK_OUT];
+			crColor = BKCOLOR;	//m_crColors[BTNST_COLOR_BK_OUT];
 	} // else
 
 	CBrush		brBackground(crColor);

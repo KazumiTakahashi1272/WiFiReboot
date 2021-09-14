@@ -11,4 +11,6 @@
 #define WHITE      RGB(255,255,255)
 #define GRAY       RGB(192,192,192)
 
+#define BKCOLOR    RGB(175, 199, 223)
+
 

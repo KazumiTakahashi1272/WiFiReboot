@@ -114,6 +114,11 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	if ( m_hWndRgn )
 		SetWindowRgn( m_hWndRgn, TRUE );
 
+	CFont font;
+	CClientDC dc(this);
+	font.CreatePointFont( 120, _T("Arial"), &dc );
+	m_ctrlDesc.SetFont( &font );
+
 	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
 	//  Framework は、この設定を自動的に行います。
 	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
