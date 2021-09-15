@@ -693,7 +693,7 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 	RunCmdProc( cmd3 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 3 );
 	RunCmdProc( cmd4 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 4 );
 	RunCmdProc( cmd5 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 5 );
-	RunCmdProc( cmd6 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 6 );
+	RunCmdProc( cmd6 );	Sleep( 5000 ); m_ctrlRebootProg.SetPos( 6 );
 
 	GetDlgItem(IDC_PASSWORD)->EnableWindow( TRUE );
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );
