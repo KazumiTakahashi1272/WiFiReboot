@@ -131,7 +131,6 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_btnMinimize.DrawBorder( FALSE, TRUE );
 
 	// TODO: 初期化をここに追加します。
-	OnCbnSelchangeCbSsid();
 
 	m_ctrlDesc.SetTextColor( LIGHTBLUE );
 	m_ctrlDesc.SetBkColor( RGB(175, 199, 223) );
@@ -355,6 +354,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 	m_ctrlCbSSID.SetCurSel( 0 );
 	GetDlgItem(IDC_CB_SSID)->SetFocus();
+
+	OnCbnSelchangeCbSsid();
 
 	return FALSE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
 }

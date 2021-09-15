@@ -79,7 +79,6 @@ public:
 	CProgressCtrl m_ctrlRebootProg;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CEditFlat m_ctrlPsw;
-	afx_msg void OnEnKillfocusPassword();
 	afx_msg void OnCbnSelchangeCbSsid();
 	CColorStatic m_ctrlDesc;
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);

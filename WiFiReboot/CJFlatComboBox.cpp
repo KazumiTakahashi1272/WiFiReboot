@@ -245,6 +245,9 @@ void CCJFlatComboBox::OnEditUpdate()
 		SetEditSel(dStart, dEnd);
 	else
 		SetEditSel(nLength, -1);
+
+	CWiFiRebootDlg* pApp = (CWiFiRebootDlg*)AfxGetApp()->m_pMainWnd;
+	pApp->OnCbnSelchangeCbSsid();
 }
 
 void CCJFlatComboBox::OnSysColorChange() 
