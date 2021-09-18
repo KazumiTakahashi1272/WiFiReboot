@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string>
 #include <wchar.h>
+#include <wlanapi.h>
 
 #pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "ole32.lib")
@@ -30,6 +31,8 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 	setlocale(LC_ALL, "japanese");
 	WCHAR strReason[1024] = { NULL };
 	WCHAR strError[1024] = { NULL };
+
+	CWiFiRebootDlg* dlg = (CWiFiRebootDlg*)AfxGetApp();
 
 	//通知元をauto configuration module(ACM)に設定
 	if ( wlanNotifData->NotificationSource == WLAN_NOTIFICATION_SOURCE_ACM )
@@ -55,7 +58,6 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 			{
 				bScanWait = false;
 				WlanReasonCodeToString( pConnNotifData->wlanReasonCode, 1024, strReason, NULL );
-				CWiFiRebootDlg* dlg = (CWiFiRebootDlg*)AfxGetApp();
 				dlg->MsgReporter( (LPSTR)strError, (LPCSTR)L"ScanFailed Reason: %ls\n", strReason );
 			}
 			break;
@@ -65,7 +67,7 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 		//	break;
 		}
 
-		OutputDebugString( (LPCSTR)notificationMessage );
+		dlg->MsgReporter( "%s", (LPCSTR)notificationMessage );
 	}
 }
 
@@ -106,6 +108,7 @@ END_MESSAGE_MAP()
 
 
 // CWiFiRebootDlg メッセージ ハンドラ
+#define WLAN_PROFILE_GET_PLAINTEXT_KEY             0x00000004
 
 BOOL CWiFiRebootDlg::OnInitDialog()
 {
@@ -186,8 +189,45 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 		for ( i=0 ; i < (int)pIfList->dwNumberOfItems ; i++ )
 		{
+			WLAN_PROFILE_INFO_LIST* pProfileList;
+			PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;
+
 			pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
 			MsgReporter( "  Interface Index[%u]:\t %lu\n", i, i );
+
+			if ( ERROR_SUCCESS == WlanGetProfileList( hClient, &pIfInfo->InterfaceGuid, NULL, &pProfileList) )
+			{
+				for (DWORD j = 0 ; j < pProfileList->dwNumberOfItems ; j++ )
+				{
+					LPWSTR lpszXmlProfile;
+					DWORD dwFlags = WLAN_PROFILE_GET_PLAINTEXT_KEY | WLAN_PROFILE_USER;
+					DWORD dwAccess = WLAN_READ_ACCESS;
+
+					WLAN_PROFILE_INFO* pProfileInfo = &pProfileList->ProfileInfo[j];
+					WlanGetProfile(hClient, &pIfInfo->InterfaceGuid, pProfileInfo->strProfileName, NULL, &lpszXmlProfile, &dwFlags, &dwAccess);
+
+					CString strXml = CW2A(lpszXmlProfile);
+					WlanFreeMemory(lpszXmlProfile);
+
+					int nFirstIndex = strXml.Find("<SSID>");
+					int nLastIndex = strXml.Find("</SSID>");
+
+					CString strSSID = CString(((LPCTSTR)strXml) + nFirstIndex, nLastIndex - nFirstIndex);
+					nFirstIndex = strSSID.Find("<name>");
+					nLastIndex = strSSID.Find("</name>");
+					strSSID = CString(((LPCTSTR)strSSID) + nFirstIndex + 6, nLastIndex - (nFirstIndex + 6));
+
+					CString strKey;
+					nFirstIndex = strXml.Find(_T("<keyMaterial>"));
+					if (nFirstIndex != -1)
+					{
+						nLastIndex = strXml.Find(_T("</keyMaterial>"));
+						strKey = CString(((LPCTSTR)strXml) + nFirstIndex + 13, nLastIndex - (nFirstIndex + 13));
+
+						MsgReporter( "SSID=%s(%s)\n", strSSID, strKey );
+					}
+				}
+			}
 
 			iRet = StringFromGUID2( pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString) );
 			MsgReporter( "  InterfaceGUID[%d]: %ws\n", i, GuidString );
@@ -328,7 +368,71 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					else
 						MsgReporter( "No\n" );
 
-					MsgReporter( "\n" );
+					MsgReporter( "  Default AuthAlgorithm[%u]: ", j);
+					switch ( pBssEntry->dot11DefaultAuthAlgorithm )
+					{
+					default:
+						MsgReporter( "Other (%lu)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_80211_OPEN:
+						MsgReporter( "802.11 Open (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_80211_SHARED_KEY:
+						MsgReporter( "802.11 Shared (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_WPA:
+						MsgReporter( "WPA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_WPA_PSK:
+						MsgReporter( "WPA-PSK (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_WPA_NONE:
+						MsgReporter( "WPA-None (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_RSNA:
+						MsgReporter( "RSNA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					case DOT11_AUTH_ALGO_RSNA_PSK:
+						MsgReporter( "RSNA with PSK(%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						break;
+					}
+
+					MsgReporter( "  Default CipherAlgorithm[%u]: ", j);
+					switch ( pBssEntry->dot11DefaultCipherAlgorithm )
+					{
+					default:
+						MsgReporter( "Other (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_NONE:
+						MsgReporter( "None (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_WEP40:
+						MsgReporter( "WEP-40 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_TKIP:
+						MsgReporter( "TKIP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_CCMP:
+						MsgReporter( "CCMP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_WEP104:
+						MsgReporter( "WEP-104 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					case DOT11_CIPHER_ALGO_WEP:
+						MsgReporter( "WEP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						break;
+					}
+
+					MsgReporter( "  Flags[%u]:\t 0x%x", j, pBssEntry->dwFlags);
+					if (pBssEntry->dwFlags)
+					{
+						if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED)
+							MsgReporter( " - Currently connected");
+						if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED)
+							MsgReporter( " - Has profile");
+					}
+
+					MsgReporter( "\n---------------------------------\n" );
 				}
 			}
 		}
@@ -657,18 +761,19 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	UpdateData();
 
-	m_ctrlRebootProg.SetRange( 0, 6 );
+	m_ctrlRebootProg.SetRange( 0, 7 );
 
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
 	GetDlgItem(IDC_PASSWORD)->EnableWindow( FALSE );
 
 	CString str, str2, str3;
 	std::string cmd1( "cmd /c netsh wlan disconnect" );
-	std::string cmd2( "cmd /c powershell Restart-NetAdapter -Name Wi-Fi" );
-	std::string cmd3;
-	std::string cmd4( "cmd /c netsh wlan connect name=" );
-	std::string cmd5( "cmd /c netsh interface set interface Wi-Fi disable" );
-	std::string cmd6( "cmd /c netsh interface set interface Wi-Fi enabled" );
+	std::string cmd2( "cmd /c netsh interface set interface name=Wi-Fi admin=disabled" );
+	std::string cmd3( "cmd /c powershell Restart-NetAdapter -Name Wi-Fi" );
+	std::string cmd4;
+	std::string cmd5( "cmd /c netsh wlan connect name=" );
+	std::string cmd6( "cmd /c netsh interface set interface Wi-Fi disable" );
+	std::string cmd7( "cmd /c netsh interface set interface Wi-Fi enabled" );
 
 	m_ctrlCbSSID.GetWindowText( str );
 	std::string ssid( str.GetBuffer() );
@@ -686,15 +791,16 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	str3.Format( "cmd /c netsh wlan set profileparameter name=%s keymaterial=%s connectionmode=auto", ssid.c_str(), psw.c_str() );
 
-	cmd3 = str3;
-	cmd4 += ssid;
+	cmd4 = str3;
+	cmd5 += ssid;
 
 	RunCmdProc( cmd1 ); Sleep( 1000 ); m_ctrlRebootProg.SetPos( 1 );
 	RunCmdProc( cmd2 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 2 );
 	RunCmdProc( cmd3 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 3 );
 	RunCmdProc( cmd4 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 4 );
 	RunCmdProc( cmd5 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 5 );
-	RunCmdProc( cmd6 );	Sleep( 5000 ); m_ctrlRebootProg.SetPos( 6 );
+	RunCmdProc( cmd6 );	Sleep( 1000 ); m_ctrlRebootProg.SetPos( 6 );
+	RunCmdProc( cmd7 );	Sleep( 5000 ); m_ctrlRebootProg.SetPos( 7 );
 
 	GetDlgItem(IDC_PASSWORD)->EnableWindow( TRUE );
 	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( TRUE );
@@ -707,7 +813,7 @@ DWORD CWiFiRebootDlg::RunCmdProc(string cmd)
 {
     STARTUPINFO  si;
     PROCESS_INFORMATION pi;
-    DWORD ret;
+    DWORD ret, dwExitCode;
     HANDLE hWndmain;
  
     memset(&si, 0, sizeof(si));
@@ -720,9 +826,13 @@ DWORD CWiFiRebootDlg::RunCmdProc(string cmd)
                       NULL, NULL, &si, &pi);
 
 	hWndmain = pi.hProcess;
-    CloseHandle(pi.hThread);
-    WaitForSingleObject(hWndmain, INFINITE);
-    CloseHandle(hWndmain);
+	CloseHandle( pi.hThread );
+
+	GetExitCodeProcess( hWndmain, &dwExitCode );
+	MsgReporter( "Return=%d, dwExitCode=%d\n", ret, dwExitCode );
+
+    WaitForSingleObject( hWndmain, INFINITE );
+    CloseHandle( hWndmain );
 
 	return ret;
 }
