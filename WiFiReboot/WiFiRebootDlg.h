@@ -25,6 +25,18 @@ using namespace std;         //  名前空間指定
 
 #include "BtnST.h"
 
+typedef struct _WLAN_PROFILE
+{
+	string ssid;
+	string pass;
+} wlan_Profile;
+
+typedef struct _WLAN_INTERFACE
+{
+	std::vector<wlan_Profile*> vProfile;
+} wlan_Interface;
+
+
 // CWiFiRebootDlg ダイアログ
 class CWiFiRebootDlg : public CDialog
 {
@@ -52,6 +64,9 @@ public:
 // 実装
 protected:
 	HICON m_hIcon;
+
+public:
+	std::vector<wlan_Interface*>	m_vInterface;
 
 public:
 	CButtonST	m_btnCancel;
@@ -84,4 +99,5 @@ public:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	CColorStatic m_ctrlStaticSsid;
 	CColorStatic m_ctrlStaticPwd;
+	afx_msg void OnBnClickedCancel();
 };

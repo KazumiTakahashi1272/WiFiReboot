@@ -10,8 +10,12 @@
 #include <stdlib.h>
 #include <string>
 #include <wchar.h>
-#include <wlanapi.h>
 
+#include <iostream>
+#include <vector>
+using namespace std;
+
+#include <wlanapi.h>
 #pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "ole32.lib")
 
@@ -24,6 +28,7 @@
 
 static bool bScanWait = true;
 
+#define wlan_notification_acm_scan_list_refresh 0x0000001a
 
 void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOID *p)
 {
@@ -62,9 +67,9 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 			}
 			break;
 
-		//case wlan_notification_acm_scan_list_refresh: //ネットワーク一覧が更新された
-		//	notificationMessage = L"wlan_notification_acm_scan_list_refresh";
-		//	break;
+		case wlan_notification_acm_scan_list_refresh: //ネットワーク一覧が更新された
+			notificationMessage = L"wlan_notification_acm_scan_list_refresh";
+			break;
 		}
 
 		dlg->MsgReporter( "%s", (LPCSTR)notificationMessage );
@@ -104,6 +109,7 @@ BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
 	ON_CBN_SELCHANGE(IDC_CB_SSID, &CWiFiRebootDlg::OnCbnSelchangeCbSsid)
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_MINIMIZE, OnMinimize)
+	ON_BN_CLICKED(IDCANCEL, &CWiFiRebootDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 
@@ -189,6 +195,9 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 		for ( i=0 ; i < (int)pIfList->dwNumberOfItems ; i++ )
 		{
+			wlan_Interface* pInterface = new wlan_Interface;
+			m_vInterface.push_back( pInterface );
+
 			WLAN_PROFILE_INFO_LIST* pProfileList;
 			PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;
 
@@ -225,6 +234,11 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						strKey = CString(((LPCTSTR)strXml) + nFirstIndex + 13, nLastIndex - (nFirstIndex + 13));
 
 						MsgReporter( "SSID=%s(%s)\n", strSSID, strKey );
+
+						wlan_Profile* pProfile = new wlan_Profile;
+						pProfile->ssid = strSSID;
+						pProfile->pass = strKey;
+						pInterface->vProfile.push_back( pProfile );
 					}
 				}
 			}
@@ -462,6 +476,26 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	OnCbnSelchangeCbSsid();
 
 	return FALSE;  // フォーカスをコントロールに設定した場合を除き、TRUE を返します。
+}
+
+void CWiFiRebootDlg::OnBnClickedCancel()
+{
+	vector<wlan_Interface*>::iterator itrInterface = m_vInterface.begin();
+	while ( itrInterface != m_vInterface.end() )
+	{
+		vector<wlan_Profile*>::iterator itrProfile = (*itrInterface)->vProfile.begin();
+		while ( itrProfile != (*itrInterface)->vProfile.end() )
+		{
+			LPVOID pProfile = (*itrProfile);
+			delete pProfile;
+
+			itrProfile++;
+		}
+
+		itrInterface = m_vInterface.erase( itrInterface );
+	}
+
+	OnCancel();
 }
 
 void CWiFiRebootDlg::MsgReporter(const char *format, ... )
@@ -914,3 +948,4 @@ void CWiFiRebootDlg::OnMinimize()
 {
 	ShowWindow( SW_MINIMIZE );	
 }
+
