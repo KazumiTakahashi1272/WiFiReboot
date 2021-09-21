@@ -27,8 +27,12 @@ using namespace CPlusPlusLogging;
 // CWiFiRebootDlg ダイアログ
 
 static bool bScanWait = true;
+std::stringstream ss;
+string s;
 
-#define wlan_notification_acm_scan_list_refresh 0x0000001a
+#define wlan_notification_acm_scan_list_refresh		0x0000001a
+#define WLAN_PROFILE_GET_PLAINTEXT_KEY				0x00000004
+#define REPORT	s = ss.str(); MsgReporter( s.c_str() );  ss.str( "" ); ss.clear(std::stringstream::goodbit);
 
 void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOID *p)
 {
@@ -63,7 +67,11 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 			{
 				bScanWait = false;
 				WlanReasonCodeToString( pConnNotifData->wlanReasonCode, 1024, strReason, NULL );
-				dlg->MsgReporter( (LPSTR)strError, (LPCSTR)L"ScanFailed Reason: %ls\n", strReason );
+				//dlg->MsgReporter( (LPSTR)strError, (LPCSTR)L"ScanFailed Reason: %ls\n", strReason );
+				::ss << "ScanFailed Reason: " << strReason << endl;
+				::s = ::ss.str();
+				dlg->MsgReporter( ::s.c_str() );
+				::ss.str( "" ); ::ss.clear(std::stringstream::goodbit);
 			}
 			break;
 
@@ -72,7 +80,11 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 			break;
 		}
 
-		dlg->MsgReporter( "%s", (LPCSTR)notificationMessage );
+		//dlg->MsgReporter( "%s", (LPCSTR)notificationMessage );
+		::ss << notificationMessage << endl;
+		::s = ::ss.str();
+		dlg->MsgReporter( ::s.c_str() );
+		::ss.str( "" ); ::ss.clear(std::stringstream::goodbit);
 	}
 }
 
@@ -114,13 +126,11 @@ END_MESSAGE_MAP()
 
 
 // CWiFiRebootDlg メッセージ ハンドラ
-#define WLAN_PROFILE_GET_PLAINTEXT_KEY             0x00000004
-#define REPORT	s = ss.str(); MsgReporter( s.c_str() );  ss.str( "" ); ss.clear(std::stringstream::goodbit);
 
 BOOL CWiFiRebootDlg::OnInitDialog()
 {
-	std::stringstream ss;
-	string s;
+//	std::stringstream ss;
+//	string s;
 
 	CDialog::OnInitDialog();
 
@@ -258,34 +268,33 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			switch ( pIfInfo->isState )
 			{
 			default:
-				ss << "Unknown state " << pIfInfo->isState << endl;
+				ss << "Unknown state " << pIfInfo->isState << endl; REPORT;
 				break;
 			case wlan_interface_state_not_ready:
-				ss << "Not ready" << endl;
+				ss << "Not ready" << endl; REPORT;
 				break;
 			case wlan_interface_state_connected:
-				ss << "Connected" << endl;
+				ss << "Connected" << endl; REPORT;
 				break;
 			case wlan_interface_state_ad_hoc_network_formed:
-				ss << "First node in a ad hoc network" << endl;
+				ss << "First node in a ad hoc network" << endl; REPORT;
 				break;
 			case wlan_interface_state_disconnecting:
-				ss << "Disconnecting" << endl;
+				ss << "Disconnecting" << endl; REPORT;
 				break;
 			case wlan_interface_state_disconnected:
-				ss << "Not connected" << endl;
+				ss << "Not connected" << endl; REPORT;
 				break;
 			case wlan_interface_state_associating:
-				ss << "Attempting to associate with a network" << endl;
+				ss << "Attempting to associate with a network" << endl; REPORT;
 				break;
 			case wlan_interface_state_discovering:
-				ss << "Auto configuration is discovering settings for the network\n" << endl;
+				ss << "Auto configuration is discovering settings for the network\n" << endl; REPORT;
 				break;
 			case wlan_interface_state_authenticating:
-				ss << "In process of authenticating" << endl;
+				ss << "In process of authenticating" << endl; REPORT;
 				break;
 			}
-			REPORT;
 
 			//コールバックの登録
 			dwResult = WlanRegisterNotification( hClient,
@@ -311,11 +320,12 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			if ( dwResult != ERROR_SUCCESS )
 			{
 				dwRetVal = 1;
-				MsgReporter( "WlanGetAvailableNetworkList failed with error" );
+				ss << "WlanGetAvailableNetworkList failed with error" << endl; REPORT;
 			}
 			else
 			{
-				ss << "  Num Entries: " << pBssList->dwNumberOfItems << endl << endl; REPORT;
+				ss << "  Num Entries: " << pBssList->dwNumberOfItems << endl; REPORT;
+				ss << "---------------------------------" << endl; REPORT;
 				for ( j=0 ; j < pBssList->dwNumberOfItems ; j++ )
 				{
 					pBssEntry = (WLAN_AVAILABLE_NETWORK *)& pBssList->Network[j];
@@ -380,7 +390,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						iRSSI = -50;
 					else
 						iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
-					ss << "  Signal Quality[" << j << "]:\t " << pBssEntry->wlanSignalQuality << "(RSSI: " << iRSSI << " dBm)" << endl; REPORT;
+					ss << "  Signal Quality[" << j << "]:\t " << std::dec << pBssEntry->wlanSignalQuality << "(RSSI: " << std::dec << iRSSI << " dBm)" << endl; REPORT;
 
 					ss << "  Security Enabled[" << j << "]:\t ";
 					if ( pBssEntry->bSecurityEnabled )
@@ -456,7 +466,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 							ss << " - Has profile";
 					}
 
-					ss << endl << "---------------------------------" << endl; REPORT;
+					ss << endl; REPORT;
+					ss << "---------------------------------" << endl; REPORT;
 				}
 			}
 		}
