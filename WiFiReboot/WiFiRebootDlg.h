@@ -24,6 +24,7 @@
 using namespace std;         //  –¼‘O‹óŠÔŽw’è
 
 #include "BtnST.h"
+#include "Logger.h"
 
 typedef struct _WLAN_PROFILE
 {

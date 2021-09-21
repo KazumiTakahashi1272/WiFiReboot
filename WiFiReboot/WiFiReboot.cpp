@@ -6,6 +6,12 @@
 #include "WiFiReboot.h"
 #include "WiFiRebootDlg.h"
 
+#include <iostream>
+#include <sstream>
+#include "Logger.h"
+using namespace std;
+using namespace CPlusPlusLogging;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -49,6 +55,8 @@ BOOL CWiFiRebootApp::InitInstance()
 	CWinAppEx::InitInstance();
 
 	AfxEnableControlContainer();
+
+	LOG_ALWAYS("<=============================== START OF PROGRAM ===============================>\n");
 
 	CWiFiRebootDlg dlg;
 	m_pMainWnd = &dlg;

@@ -14,11 +14,11 @@
 #include <iostream>
 #include <vector>
 using namespace std;
+using namespace CPlusPlusLogging;
 
 #include <wlanapi.h>
 #pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "ole32.lib")
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -115,9 +115,13 @@ END_MESSAGE_MAP()
 
 // CWiFiRebootDlg メッセージ ハンドラ
 #define WLAN_PROFILE_GET_PLAINTEXT_KEY             0x00000004
+#define REPORT	s = ss.str(); MsgReporter( s.c_str() );  ss.str( "" ); ss.clear(std::stringstream::goodbit);
 
 BOOL CWiFiRebootDlg::OnInitDialog()
 {
+	std::stringstream ss;
+	string s;
+
 	CDialog::OnInitDialog();
 
 	if ( m_hWndRgn )
@@ -190,8 +194,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	}
 	else
 	{
-		MsgReporter( "Num Entries: %lu\n", pIfList->dwNumberOfItems );
-		MsgReporter( "Current Index: %lu\n", pIfList->dwIndex );
+		ss << "Num Entries: " << pIfList->dwNumberOfItems << endl; REPORT;
+		ss << "Current Index: " << pIfList->dwIndex << endl; REPORT;
 
 		for ( i=0 ; i < (int)pIfList->dwNumberOfItems ; i++ )
 		{
@@ -202,7 +206,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;
 
 			pIfInfo = (WLAN_INTERFACE_INFO *)&pIfList->InterfaceInfo[i];
-			MsgReporter( "  Interface Index[%u]:\t %lu\n", i, i );
+			ss << "  Interface Index[" << i << "]:\t " << i << endl; REPORT;
 
 			if ( ERROR_SUCCESS == WlanGetProfileList( hClient, &pIfInfo->InterfaceGuid, NULL, &pProfileList) )
 			{
@@ -233,7 +237,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						nLastIndex = strXml.Find(_T("</keyMaterial>"));
 						strKey = CString(((LPCTSTR)strXml) + nFirstIndex + 13, nLastIndex - (nFirstIndex + 13));
 
-						MsgReporter( "SSID=%s(%s)\n", strSSID, strKey );
+						ss << "  SSID[" << strSSID << "] = " << strKey << endl; REPORT;
 
 						wlan_Profile* pProfile = new wlan_Profile;
 						pProfile->ssid = strSSID;
@@ -244,45 +248,44 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			}
 
 			iRet = StringFromGUID2( pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString) );
-			MsgReporter( "  InterfaceGUID[%d]: %ws\n", i, GuidString );
+			ss << "  InterfaceGUID[" << i << "]: " << GuidString << endl; REPORT;
 
 			m_ctrlDesc.SetWindowText( CW2A(pIfInfo->strInterfaceDescription) );
 
-			MsgReporter( "  Interface Description[%d]: %ws", i, pIfInfo->strInterfaceDescription );
-			MsgReporter( "\n" );
-			MsgReporter( "  Interface State[%d]:\t ", i );
+			ss << "  Interface Description[" << i << "]: " <<  pIfInfo->strInterfaceDescription << endl; REPORT;
+			ss << "  Interface State[" << i << "]\t ";
 
 			switch ( pIfInfo->isState )
 			{
+			default:
+				ss << "Unknown state " << pIfInfo->isState << endl;
+				break;
 			case wlan_interface_state_not_ready:
-				MsgReporter( "Not ready\n" );
+				ss << "Not ready" << endl;
 				break;
 			case wlan_interface_state_connected:
-				MsgReporter( "Connected\n" );
+				ss << "Connected" << endl;
 				break;
 			case wlan_interface_state_ad_hoc_network_formed:
-				MsgReporter( "First node in a ad hoc network\n" );
+				ss << "First node in a ad hoc network" << endl;
 				break;
 			case wlan_interface_state_disconnecting:
-				MsgReporter( "Disconnecting\n" );
+				ss << "Disconnecting" << endl;
 				break;
 			case wlan_interface_state_disconnected:
-				MsgReporter( "Not connected\n" );
+				ss << "Not connected" << endl;
 				break;
 			case wlan_interface_state_associating:
-				MsgReporter( "Attempting to associate with a network\n" );
+				ss << "Attempting to associate with a network" << endl;
 				break;
 			case wlan_interface_state_discovering:
-				MsgReporter( "Auto configuration is discovering settings for the network\n" );
+				ss << "Auto configuration is discovering settings for the network\n" << endl;
 				break;
 			case wlan_interface_state_authenticating:
-				MsgReporter( "In process of authenticating\n" );
-				break;
-			default:
-				MsgReporter( "Unknown state %ld\n", pIfInfo->isState );
+				ss << "In process of authenticating" << endl;
 				break;
 			}
-			MsgReporter( "\n" );
+			REPORT;
 
 			//コールバックの登録
 			dwResult = WlanRegisterNotification( hClient,
@@ -312,23 +315,24 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			}
 			else
 			{
-				MsgReporter( "  Num Entries: %lu\n\n", pBssList->dwNumberOfItems );
+				ss << "  Num Entries: " << pBssList->dwNumberOfItems << endl << endl; REPORT;
 				for ( j=0 ; j < pBssList->dwNumberOfItems ; j++ )
 				{
 					pBssEntry = (WLAN_AVAILABLE_NETWORK *)& pBssList->Network[j];
-					MsgReporter( "  Profile Name[%u]:  %ws\n", j, pBssEntry->strProfileName );
-					//m_ctrlCbSSID.AddString( CW2A(pBssEntry->strProfileName) );
+					ss << "  Profile Name[" << j << "]:  " << pBssEntry->strProfileName << endl; REPORT;
 
-					MsgReporter( "  SSID[%u]:\t\t ", j );
+					ss << "  SSID[" << j << "]:\t\t ";
 					if ( pBssEntry->dot11Ssid.uSSIDLength == 0 )
-						OutputDebugString( "\n" );
+					{
+						ss << endl; REPORT;
+					}
 					else
 					{
 						char ssid[1024];
 
 						for ( k=0 ; k < pBssEntry->dot11Ssid.uSSIDLength ; k++ )
 						{
-							MsgReporter( "%c", (int)pBssEntry->dot11Ssid.ucSSID[k] );
+							//MsgReporter( "%c", (int)pBssEntry->dot11Ssid.ucSSID[k] );
 							ssid[k] = pBssEntry->dot11Ssid.ucSSID[k];
 						}
 						ssid[k] = '\0';
@@ -336,37 +340,39 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						if ( strlen(ssid) != 0 )
 							m_ctrlCbSSID.AddString( (LPCTSTR)&ssid[0] );
 
-						OutputDebugString( "\n" );
+						ss << ssid << endl; REPORT;
 					}
 
-					MsgReporter( "  BSS Network type[%u]:\t ", j );
+					ss << "  BSS Network type[" << j << "]:\t ";
 					switch ( pBssEntry->dot11BssType )
 					{
 					default:
-						MsgReporter( "Other (%lu)\n", pBssEntry->dot11BssType );
+						ss << "Other (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
 						break;
 
 					case dot11_BSS_type_infrastructure:
-						MsgReporter( "Infrastructure (%u)\n", pBssEntry->dot11BssType );
+						ss << "Infrastructure (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
 						break;
 
 					case dot11_BSS_type_independent:
-						MsgReporter( "Infrastructure (%u)\n", pBssEntry->dot11BssType );
+						ss << "Infrastructure (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
 						break;
 					}
 
-					MsgReporter( "  Number of BSSIDs[%u]:\t %u\n", j, pBssEntry->uNumberOfBssids );
+					ss << "  Number of BSSIDs[" << j << "]:\t " << pBssEntry->uNumberOfBssids << endl; REPORT;
 
-					MsgReporter( "  Connectable[%u]:\t ", j );
+					ss << "  Connectable[" << j << "]:\t ";
 					if ( pBssEntry->bNetworkConnectable )
-						MsgReporter( "Yes\n");
+					{
+						ss << "Yes" << endl; REPORT;
+					}
 					else
 					{
-						MsgReporter( "No\n" );
-						MsgReporter( "  Not connectable WLAN_REASON_CODE value[%u]:\t %u\n", j, pBssEntry->wlanNotConnectableReason );
+						ss << "No" << endl;
+						ss << "  Not connectable WLAN_REASON_CODE value[" << j << "]:\t " << pBssEntry->wlanNotConnectableReason << endl; REPORT;
 					}
 
-					MsgReporter( "  Number of PHY types supported[%u]:\t %u\n", j, pBssEntry->uNumberOfPhyTypes );
+					ss << "  Number of PHY types supported[" << j << "]:\t " << pBssEntry->uNumberOfPhyTypes << endl; REPORT;
 
 					if ( pBssEntry->wlanSignalQuality == 0 )
 						iRSSI = -100;
@@ -374,79 +380,83 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						iRSSI = -50;
 					else
 						iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
-					MsgReporter( "  Signal Quality[%u]:\t %u (RSSI: %i dBm)\n", j, pBssEntry->wlanSignalQuality, iRSSI );
+					ss << "  Signal Quality[" << j << "]:\t " << pBssEntry->wlanSignalQuality << "(RSSI: " << iRSSI << " dBm)" << endl; REPORT;
 
-					MsgReporter( "  Security Enabled[%u]:\t ", j );
+					ss << "  Security Enabled[" << j << "]:\t ";
 					if ( pBssEntry->bSecurityEnabled )
-						MsgReporter( "Yes\n" );
+					{
+						ss << "Yes" << endl; REPORT;
+					}
 					else
-						MsgReporter( "No\n" );
+					{
+						ss << "No" << endl; REPORT;
+					}
 
-					MsgReporter( "  Default AuthAlgorithm[%u]: ", j);
+					ss << "  Default AuthAlgorithm[" << j << "]: ";
 					switch ( pBssEntry->dot11DefaultAuthAlgorithm )
 					{
 					default:
-						MsgReporter( "Other (%lu)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "Other (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_80211_OPEN:
-						MsgReporter( "802.11 Open (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "802.11 Open (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_80211_SHARED_KEY:
-						MsgReporter( "802.11 Shared (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "802.11 Shared (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA:
-						MsgReporter( "WPA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "WPA (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA_PSK:
-						MsgReporter( "WPA-PSK (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "WPA-PSK (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA_NONE:
-						MsgReporter( "WPA-None (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "WPA-None (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_RSNA:
-						MsgReporter( "RSNA (%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "RSNA (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_RSNA_PSK:
-						MsgReporter( "RSNA with PSK(%u)\n", pBssEntry->dot11DefaultAuthAlgorithm);
+						ss << "RSNA with PSK(" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					}
 
-					MsgReporter( "  Default CipherAlgorithm[%u]: ", j);
+					ss << "  Default CipherAlgorithm[" << j << "]: ";
 					switch ( pBssEntry->dot11DefaultCipherAlgorithm )
 					{
 					default:
-						MsgReporter( "Other (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "Other (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_NONE:
-						MsgReporter( "None (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "None (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_WEP40:
-						MsgReporter( "WEP-40 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "WEP-40 (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_TKIP:
-						MsgReporter( "TKIP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "TKIP (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_CCMP:
-						MsgReporter( "CCMP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "CCMP (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_WEP104:
-						MsgReporter( "WEP-104 (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "WEP-104 (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_CIPHER_ALGO_WEP:
-						MsgReporter( "WEP (0x%x)\n", pBssEntry->dot11DefaultCipherAlgorithm);
+						ss << "WEP (0x" << std::hex << pBssEntry->dot11DefaultCipherAlgorithm << ")" << endl; REPORT;
 						break;
 					}
 
-					MsgReporter( "  Flags[%u]:\t 0x%x", j, pBssEntry->dwFlags);
+					ss << "  Flags[" << j << "]:\t 0x" << std::hex << pBssEntry->dwFlags;
 					if (pBssEntry->dwFlags)
 					{
 						if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED)
-							MsgReporter( " - Currently connected");
+							ss << " - Currently connected";
 						if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED)
-							MsgReporter( " - Has profile");
+							ss << " - Has profile";
 					}
 
-					MsgReporter( "\n---------------------------------\n" );
+					ss << endl << "---------------------------------" << endl; REPORT;
 				}
 			}
 		}
@@ -507,6 +517,7 @@ void CWiFiRebootDlg::MsgReporter(const char *format, ... )
 	vsprintf( szMsg, format, ap );
 	va_end( ap );
 
+	LOG_INFO( szMsg );
 	OutputDebugString( szMsg );
 }
 
@@ -536,6 +547,7 @@ void CWiFiRebootDlg::ErrReporter(const char *format, ... )
 	szFinal = (char*)LocalAlloc( LPTR, strlen(szMsg) + dwExtSize + 32 );
 	wsprintf( szFinal, szFormat, dwError, szBuffer, szMsg );
 
+	LOG_INFO( szFinal );
 	OutputDebugString( szFinal );
 
 	LocalFree( szFinal );
