@@ -14,12 +14,23 @@ using namespace CPlusPlusLogging;
 
 Logger* Logger::m_Instance = 0;
 
-// Log file name. File name should be change from here only
-const string logFileName = "wifiLogFile.log";
+static string strWiFiLogPath;
 
 Logger::Logger()
 {
-   m_File.open(logFileName.c_str(), ios::out|ios::app);
+	stringstream ss;
+	string s;
+	TCHAR szDrive[_MAX_DRIVE], szPath[MAX_PATH];
+	TCHAR szFullPath[MAX_PATH] = { NULL };
+
+	GetModuleFileName( NULL, szFullPath, sizeof(szFullPath) );
+	_splitpath( szFullPath, szDrive, szPath, NULL, NULL );
+
+	ss << szDrive << szPath << "wifiLogFile.log";
+	strWiFiLogPath = ss.str();
+	ss.str( "" );
+	
+   m_File.open( strWiFiLogPath.c_str(), ios::out|ios::app );
    m_LogLevel	= LOG_LEVEL_TRACE;
    m_LogType	= FILE_LOG;
 

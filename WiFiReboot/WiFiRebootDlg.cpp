@@ -27,8 +27,12 @@ using namespace CPlusPlusLogging;
 // CWiFiRebootDlg ダイアログ
 
 static bool bScanWait = true;
-std::stringstream ss;
-string s;
+static std::stringstream ss;
+static string s;
+
+// Log file name. File name should be change from here only
+//const string logFileName = X;
+//string g_strModulePath;
 
 #define wlan_notification_acm_scan_list_refresh		0x0000001a
 #define WLAN_PROFILE_GET_PLAINTEXT_KEY				0x00000004
@@ -38,36 +42,39 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 {
 	//ロケール指定
 	setlocale(LC_ALL, "japanese");
-	WCHAR strReason[1024] = { NULL };
-	WCHAR strError[1024] = { NULL };
+	TCHAR strReason[1024] = { NULL };
+	TCHAR strError[1024] = { NULL };
 
 	CWiFiRebootDlg* dlg = (CWiFiRebootDlg*)AfxGetApp();
+	if ( dlg->m_hWnd )
+	{
+	}
 
 	//通知元をauto configuration module(ACM)に設定
 	if ( wlanNotifData->NotificationSource == WLAN_NOTIFICATION_SOURCE_ACM )
 	{
 		PWLAN_CONNECTION_NOTIFICATION_DATA pConnNotifData = NULL;
-		WCHAR *notificationMessage;
+		TCHAR *notificationMessage;
 
 		switch ( wlanNotifData->NotificationCode )
 		{
 		default:
-			notificationMessage = L"Unknown:";
+			notificationMessage = "Unknown:";
 			break;
 
 		case wlan_notification_acm_scan_complete: //スキャン完了
-			notificationMessage = L"wlan_notification_acm_scan_complete";
+			notificationMessage = "wlan_notification_acm_scan_complete";
 			bScanWait = false;
 			break;
 
 		case wlan_notification_acm_scan_fail: //スキャン失敗
-			notificationMessage = L"wlan_notification_acm_scan_fail";
+			notificationMessage = "wlan_notification_acm_scan_fail";
 			pConnNotifData = (PWLAN_CONNECTION_NOTIFICATION_DATA)wlanNotifData->pData;
 			if ( pConnNotifData->wlanReasonCode != ERROR_SUCCESS )
 			{
 				bScanWait = false;
-				WlanReasonCodeToString( pConnNotifData->wlanReasonCode, 1024, strReason, NULL );
-				//dlg->MsgReporter( (LPSTR)strError, (LPCSTR)L"ScanFailed Reason: %ls\n", strReason );
+				WlanReasonCodeToString( pConnNotifData->wlanReasonCode, 1024, CA2W(strReason), NULL );
+				//dlg->MsgReporter( (LPSTR)strError, (LPCSTR)"ScanFailed Reason: %ls\n", strReason );
 				::ss << "ScanFailed Reason: " << strReason << endl;
 				::s = ::ss.str();
 				dlg->MsgReporter( ::s.c_str() );
@@ -76,7 +83,7 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 			break;
 
 		case wlan_notification_acm_scan_list_refresh: //ネットワーク一覧が更新された
-			notificationMessage = L"wlan_notification_acm_scan_list_refresh";
+			notificationMessage = "wlan_notification_acm_scan_list_refresh";
 			break;
 		}
 
@@ -126,7 +133,6 @@ END_MESSAGE_MAP()
 
 
 // CWiFiRebootDlg メッセージ ハンドラ
-
 BOOL CWiFiRebootDlg::OnInitDialog()
 {
 //	std::stringstream ss;
@@ -170,7 +176,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	DWORD dwResult = 0;
 	DWORD dwRetVal = 0;
 	int iRet = 0;
-	WCHAR strError[1024] = { NULL };
+	TCHAR strError[1024] = { NULL };
 
 	WCHAR GuidString[64] = { 0 };
 
@@ -188,8 +194,11 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	dwResult = WlanOpenHandle( dwMaxClient, NULL, &dwCurVersion, &hClient );
 	if (dwResult != ERROR_SUCCESS)
 	{
-		wsprintf( (LPSTR)strError, (LPCSTR)L"WlanOpenHandle failed with error: %u\n", dwResult );
-		MessageBox( (LPCTSTR)strError, (LPCTSTR)L"WLAN error" );
+		ErrReporter( "WlanOpenHandle failed with error\n" );
+
+		wsprintf( (LPSTR)strError, (LPCSTR)"WlanOpenHandle failed with error: %u\n", dwResult );
+		MessageBox( (LPCTSTR)strError, (LPCTSTR)"WLAN error" );
+		LOG_ERROR( strError );
 		return TRUE;
 		// You can use FormatMessage here to find out why the function failed
 	}
@@ -197,8 +206,11 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	dwResult = WlanEnumInterfaces( hClient, NULL, &pIfList );
 	if (dwResult != ERROR_SUCCESS)
 	{
-		wsprintf( (LPSTR)strError, (LPCSTR)L"WlanEnumInterfaces failed with error: %u\n", dwResult );
-		MessageBox( (LPCTSTR)strError, (LPCTSTR)L"WLAN error" );
+		ErrReporter( "WlanEnumInterfaces failed with error\n" );
+
+		wsprintf( (LPSTR)strError, (LPCSTR)"WlanEnumInterfaces failed with error: %u\n", dwResult );
+		MessageBox( (LPCTSTR)strError, (LPCTSTR)"WLAN error" );
+		LOG_ERROR( strError );
 		return TRUE;
 		// You can use FormatMessage here to find out why the function failed
 	}
@@ -320,7 +332,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			if ( dwResult != ERROR_SUCCESS )
 			{
 				dwRetVal = 1;
-				ss << "WlanGetAvailableNetworkList failed with error" << endl; REPORT;
+				ErrReporter( "WlanGetAvailableNetworkList failed with error" );
+				LOG_ERROR( "WlanGetAvailableNetworkList failed with error" );
 			}
 			else
 			{
@@ -558,7 +571,7 @@ void CWiFiRebootDlg::ErrReporter(const char *format, ... )
 	szFinal = (char*)LocalAlloc( LPTR, strlen(szMsg) + dwExtSize + 32 );
 	wsprintf( szFinal, szFormat, dwError, szBuffer, szMsg );
 
-	LOG_INFO( szFinal );
+	LOG_ERROR( szFinal );
 	OutputDebugString( szFinal );
 
 	LocalFree( szFinal );
