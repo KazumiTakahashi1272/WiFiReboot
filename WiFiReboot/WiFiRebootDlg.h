@@ -28,8 +28,10 @@ using namespace std;         //  –¼‘O‹óŠÔŽw’è
 
 typedef struct _WLAN_PROFILE
 {
-	string ssid;
-	string pass;
+	string Ssid;
+	string PassKey;
+
+	bool SecurityEnabled;
 } wlan_Profile;
 
 typedef struct _WLAN_INTERFACE
@@ -67,7 +69,8 @@ protected:
 	HICON m_hIcon;
 
 public:
-	std::vector<wlan_Interface*>	m_vInterface;
+	vector<wlan_Interface*>	m_vInterface;
+	vector<wlan_Profile*> m_vProfile;
 
 public:
 	CButtonST	m_btnCancel;

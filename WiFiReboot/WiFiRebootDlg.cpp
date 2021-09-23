@@ -260,11 +260,6 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						strKey = CString(((LPCTSTR)strXml) + nFirstIndex + 13, nLastIndex - (nFirstIndex + 13));
 
 						ss << "  SSID[" << strSSID << "] = " << strKey << endl; REPORT;
-
-						wlan_Profile* pProfile = new wlan_Profile;
-						pProfile->ssid = strSSID;
-						pProfile->pass = strKey;
-						pInterface->vProfile.push_back( pProfile );
 					}
 				}
 			}
@@ -341,6 +336,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 				ss << "---------------------------------" << endl; REPORT;
 				for ( j=0 ; j < pBssList->dwNumberOfItems ; j++ )
 				{
+					wlan_Profile* pProfile = new wlan_Profile;
+
 					pBssEntry = (WLAN_AVAILABLE_NETWORK *)& pBssList->Network[j];
 					ss << "  Profile Name[" << j << "]:  " << pBssEntry->strProfileName << endl; REPORT;
 
@@ -364,6 +361,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 							m_ctrlCbSSID.AddString( (LPCTSTR)&ssid[0] );
 
 						ss << ssid << endl; REPORT;
+						pProfile->Ssid = ssid;
 					}
 
 					ss << "  BSS Network type[" << j << "]:\t ";
@@ -408,10 +406,12 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					ss << "  Security Enabled[" << j << "]:\t ";
 					if ( pBssEntry->bSecurityEnabled )
 					{
+						pProfile->SecurityEnabled = true;
 						ss << "Yes" << endl; REPORT;
 					}
 					else
 					{
+						pProfile->SecurityEnabled = false;
 						ss << "No" << endl; REPORT;
 					}
 
@@ -481,6 +481,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 					ss << endl; REPORT;
 					ss << "---------------------------------" << endl; REPORT;
+
+					pInterface->vProfile.push_back( pProfile );
 				}
 			}
 		}
@@ -514,19 +516,22 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 void CWiFiRebootDlg::OnBnClickedCancel()
 {
-	vector<wlan_Interface*>::iterator itrInterface = m_vInterface.begin();
-	while ( itrInterface != m_vInterface.end() )
+	vector<wlan_Interface*>::iterator itrInt = m_vInterface.begin();
+	while ( itrInt != m_vInterface.end() )
 	{
-		vector<wlan_Profile*>::iterator itrProfile = (*itrInterface)->vProfile.begin();
-		while ( itrProfile != (*itrInterface)->vProfile.end() )
-		{
-			LPVOID pProfile = (*itrProfile);
-			delete pProfile;
+		wlan_Interface* pInt = *itrInt;
 
-			itrProfile++;
+		vector<wlan_Profile*>::iterator itrPro = pInt->vProfile.begin();
+		while ( itrPro != pInt->vProfile.end() )
+		{
+			wlan_Profile* pProfile = *itrPro;
+
+			delete (*itrPro);
+			itrPro = pInt->vProfile.erase( itrPro );
 		}
 
-		itrInterface = m_vInterface.erase( itrInterface );
+		delete (*itrInt);
+		itrInt = m_vInterface.erase( itrInt );
 	}
 
 	OnCancel();
