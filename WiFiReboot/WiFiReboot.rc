@@ -83,7 +83,7 @@ EXSTYLE WS_EX_APPWINDOW
 FONT 10, "MS Sans Serif", 400, 0, 0x0
 BEGIN
     PUSHBUTTON      "WI-Fi 再起動",IDC_WIFI_REBOOT,7,82,237,25
-    COMBOBOX        IDC_CB_SSID,7,38,237,87,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CB_SSID,7,38,237,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT           "再起動するWiFiのSSID：",IDC_STATIC_SSID,7,29,80,8
     CONTROL         "",IDC_REBOOT_PROG,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,107,237,7
     LTEXT           "パスワード：",IDC_STATIC_PWD,7,55,80,8
@@ -100,8 +100,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,14,0,85
- PRODUCTVERSION 1,14,0,85
+ FILEVERSION 1,15,0,90
+ PRODUCTVERSION 1,15,0,90
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +119,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.14.0.85"
+            VALUE "FileVersion", "1.15.0.90"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.14.0.85"
+            VALUE "ProductVersion", "1.15.0.90"
         END
     END
     BLOCK "VarFileInfo"

@@ -16,10 +16,13 @@
 #include <string>       // ヘッダファイルインクルード
 #include "xpbutton.h"
 #include "afxcmn.h"
-#include "CJFlatComboBox.h"
 #include "EditFlat.h"
 #include "ColorStatic.h"
 #include "ColorEdit.h"
+
+#include "ListComboBox.h"
+#include "ComboListCtrlExt.h"
+#include "MyComboListCtrl.h"
 
 using namespace std;         //  名前空間指定
 
@@ -30,7 +33,7 @@ typedef struct _WLAN_PROFILE
 {
 	string Ssid;
 	string PassKey;
-
+	int SignalQuality;
 	bool SecurityEnabled;
 } wlan_Profile;
 
@@ -57,6 +60,10 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
+
+protected:
+	CComboListCtrlExt* m_pListCtrl;
+	CMyComboListCtrl* m_pListCtrl2;
 
 public:
 	static void WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOID *p);
@@ -93,7 +100,7 @@ private:
 	DWORD RunCmdProc(string cmd);
 
 public:
-	CCJFlatComboBox m_ctrlCbSSID;
+	CListComboBox m_ctrlCbSSID;
 	CXPButton m_ctrlWifiReboot;
 	CProgressCtrl m_ctrlRebootProg;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);

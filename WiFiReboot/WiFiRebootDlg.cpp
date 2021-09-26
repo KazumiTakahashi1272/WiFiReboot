@@ -46,9 +46,6 @@ void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOI
 	TCHAR strError[1024] = { NULL };
 
 	CWiFiRebootDlg* dlg = (CWiFiRebootDlg*)AfxGetApp();
-	if ( dlg->m_hWnd )
-	{
-	}
 
 	//通知元をauto configuration module(ACM)に設定
 	if ( wlanNotifData->NotificationSource == WLAN_NOTIFICATION_SOURCE_ACM )
@@ -101,6 +98,9 @@ CWiFiRebootDlg::CWiFiRebootDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
+	m_pListCtrl = new CComboListCtrlExt;
+	m_ctrlCbSSID.SetListCtrl(m_pListCtrl);
+
 	m_hBmp = (HBITMAP)LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDB_MAIN), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION );
 	m_hClientRgn = CreateEllipticRgn( 33, 34, 34, 35 );
 	m_hWndRgn = DIBToRgn( m_hBmp, 0x00ff00, FALSE );
@@ -135,8 +135,7 @@ END_MESSAGE_MAP()
 // CWiFiRebootDlg メッセージ ハンドラ
 BOOL CWiFiRebootDlg::OnInitDialog()
 {
-//	std::stringstream ss;
-//	string s;
+	CString str;
 
 	CDialog::OnInitDialog();
 
@@ -145,13 +144,21 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 	CFont font;
 	CClientDC dc(this);
-	font.CreatePointFont( 120, _T("Arial"), &dc );
+	font.CreatePointFont( 120, _T("MS UI Gothic"), &dc );
 	m_ctrlDesc.SetFont( &font );
 
 	// このダイアログのアイコンを設定します。アプリケーションのメイン ウィンドウがダイアログでない場合、
 	//  Framework は、この設定を自動的に行います。
 	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
 	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
+
+	int nItemIndex = 0;
+	m_pListCtrl->ModifyStyle(0, LVS_REPORT);
+	m_pListCtrl->SetExtendedStyle(/*LVS_EX_CHECKBOXES |*/ LVS_EX_INFOTIP | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+	m_pListCtrl->InsertColumn( 0, "SSID", LVCFMT_LEFT, 200 );
+	m_pListCtrl->InsertColumn( 1, "BSS Network type", LVCFMT_LEFT, 110 );
+	m_pListCtrl->InsertColumn( 2, "Signal", LVCFMT_LEFT, 50 );
+	m_pListCtrl->InsertColumn( 3, "Security", LVCFMT_LEFT, 70 );
 
 	m_btnCancel.SetBitmaps( IDB_CLOSE, RGB(255, 0, 255) );
 	m_btnCancel.DrawBorder( FALSE, TRUE );
@@ -352,13 +359,14 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 						for ( k=0 ; k < pBssEntry->dot11Ssid.uSSIDLength ; k++ )
 						{
-							//MsgReporter( "%c", (int)pBssEntry->dot11Ssid.ucSSID[k] );
 							ssid[k] = pBssEntry->dot11Ssid.ucSSID[k];
 						}
 						ssid[k] = '\0';
 
-						if ( strlen(ssid) != 0 )
-							m_ctrlCbSSID.AddString( (LPCTSTR)&ssid[0] );
+						if ( strlen(ssid) == 0 )
+							m_pListCtrl->InsertItem( nItemIndex, "(null)" );
+						else
+							m_pListCtrl->InsertItem( nItemIndex, ssid );
 
 						ss << ssid << endl; REPORT;
 						pProfile->Ssid = ssid;
@@ -369,16 +377,20 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					{
 					default:
 						ss << "Other (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
+						str.Format( "Other" );
 						break;
 
 					case dot11_BSS_type_infrastructure:
 						ss << "Infrastructure (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
+						str.Format( "Infrastructure" );
 						break;
 
 					case dot11_BSS_type_independent:
-						ss << "Infrastructure (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
+						ss << "Independent (" << pBssEntry->dot11BssType << ")" << endl; REPORT;
+						str.Format( "Independent" );
 						break;
 					}
+					m_pListCtrl->SetItemText( nItemIndex, 1, str );
 
 					ss << "  Number of BSSIDs[" << j << "]:\t " << pBssEntry->uNumberOfBssids << endl; REPORT;
 
@@ -402,17 +414,21 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					else
 						iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
 					ss << "  Signal Quality[" << j << "]:\t " << std::dec << pBssEntry->wlanSignalQuality << "(RSSI: " << std::dec << iRSSI << " dBm)" << endl; REPORT;
+					str.Format( "%d", pBssEntry->wlanSignalQuality );
+					m_pListCtrl->SetItemText( nItemIndex, 2, str );
 
 					ss << "  Security Enabled[" << j << "]:\t ";
 					if ( pBssEntry->bSecurityEnabled )
 					{
 						pProfile->SecurityEnabled = true;
 						ss << "Yes" << endl; REPORT;
+						m_pListCtrl->SetItemText( nItemIndex, 3, "Yes" );
 					}
 					else
 					{
 						pProfile->SecurityEnabled = false;
 						ss << "No" << endl; REPORT;
+						m_pListCtrl->SetItemText( nItemIndex, 3, "No" );
 					}
 
 					ss << "  Default AuthAlgorithm[" << j << "]: ";
@@ -483,6 +499,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					ss << "---------------------------------" << endl; REPORT;
 
 					pInterface->vProfile.push_back( pProfile );
+
+					nItemIndex++;
 				}
 			}
 		}

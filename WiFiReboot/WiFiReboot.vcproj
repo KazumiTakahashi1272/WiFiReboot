@@ -209,11 +209,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ComboListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ComboListCtrlExt.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EditFlat.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\ListComboBox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Logger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MyComboListCtrl.cpp"
 				>
 			</File>
 			<File
@@ -275,11 +291,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ComboListCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ComboListCtrlExt.h"
+				>
+			</File>
+			<File
 				RelativePath=".\EditFlat.h"
 				>
 			</File>
 			<File
+				RelativePath=".\ListComboBox.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Logger.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MyComboListCtrl.h"
 				>
 			</File>
 			<File
