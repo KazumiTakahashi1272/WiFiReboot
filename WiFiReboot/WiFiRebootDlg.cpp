@@ -114,6 +114,7 @@ void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_REBOOT_PROG, m_ctrlRebootProg);
 	DDX_Control(pDX, IDC_PASSWORD, m_ctrlPsw);
 	DDX_Control(pDX, IDC_STATIC_DESC, m_ctrlDesc);
+	DDX_Control(pDX, IDC_HELPBTN, m_btnHelp);
 	DDX_Control(pDX, IDCANCEL, m_btnCancel);
 	DDX_Control(pDX, IDC_MINIMIZE, m_btnMinimize);
 	DDX_Control(pDX, IDC_STATIC_SSID, m_ctrlStaticSsid);
@@ -129,6 +130,7 @@ BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
 	ON_WM_ERASEBKGND()
 	ON_BN_CLICKED(IDC_MINIMIZE, OnMinimize)
 	ON_BN_CLICKED(IDCANCEL, &CWiFiRebootDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_HELPBTN, &CWiFiRebootDlg::OnBnClickedHelpbtn)
 END_MESSAGE_MAP()
 
 
@@ -159,6 +161,9 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_pListCtrl->InsertColumn( 1, "BSS Network type", LVCFMT_LEFT, 110 );
 	m_pListCtrl->InsertColumn( 2, "Signal", LVCFMT_LEFT, 50 );
 	m_pListCtrl->InsertColumn( 3, "Security", LVCFMT_LEFT, 70 );
+
+	m_btnHelp.SetBitmaps( IDB_HELPBTN, RGB(255, 0, 255) );
+	m_btnHelp.DrawBorder( FALSE, TRUE );
 
 	m_btnCancel.SetBitmaps( IDB_CLOSE, RGB(255, 0, 255) );
 	m_btnCancel.DrawBorder( FALSE, TRUE );
@@ -1008,3 +1013,70 @@ void CWiFiRebootDlg::OnMinimize()
 	ShowWindow( SW_MINIMIZE );	
 }
 
+#pragma comment(lib, "version.lib")
+void CWiFiRebootDlg::OnBnClickedHelpbtn()
+{
+    const int MAX_LEN = 2048;
+    CString csMsg;
+    CString csBuf;
+    UINT uDmy;
+    struct LANGANDCODEPAGE
+	{
+        WORD wLanguage; //日本語(0411)、英語(0409)
+        WORD wCodePage;
+    } *lpTran;
+ 
+    LPTSTR    pBuf = csBuf.GetBuffer(MAX_LEN + 1);
+    ::GetModuleFileName(NULL, pBuf, MAX_LEN + 1);
+    DWORD dwZero = 0;
+    DWORD dwVerInfoSize = GetFileVersionInfoSize(pBuf, &dwZero);
+ 
+    unsigned char *pBlock = NULL;
+    pBlock = new unsigned char[dwVerInfoSize];
+    ::GetFileVersionInfo(pBuf, 0, dwVerInfoSize, pBlock);
+    ::VerQueryValue(pBlock, "\\VarFileInfo\\Translation", (LPVOID*)&lpTran, &uDmy);
+ 
+    //バージョンを取得するためのバッファ
+    char name[256];
+    void *pVer;
+ 
+    //ファイルの説明(FileDescription)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\FileDescription", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("ファイルの説明\t[%s]", pVer);
+    csMsg = csBuf;
+
+    //ファイルバージョン(FileVersion)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\FileVersion", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("ファイルバージョン\t[%s]", pVer);
+    csMsg += ("\r\n" + csBuf);
+
+    //製品名(ProductName)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\ProductName", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("製品名\t\t[%s]", pVer);
+    csMsg += ("\r\n" + csBuf);
+
+    //製品バージョン(ProductVersion)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\ProductVersion", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("プロダクトバージョン\t[%s]", pVer);
+    csMsg += ("\r\n" + csBuf);
+ 
+    //著作権(LegalCopyright)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\LegalCopyright", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("著作権\t\t[%s]", pVer);
+    csMsg += ("\r\n" + csBuf);
+
+    //会社名(CompanyName)
+    wsprintf(name, "\\StringFileInfo\\%04x%04x\\CompanyName", lpTran[0].wLanguage, lpTran[0].wCodePage);
+    ::VerQueryValue(pBlock, name, &pVer, &uDmy);
+    csBuf.Format("会社名\t\t[%s]", pVer);
+    csMsg += ("\r\n" + csBuf);
+
+    //メッセージボックスで結果表示
+    AfxMessageBox(csMsg, MB_ICONINFORMATION);
+    delete[] pBlock;
+}

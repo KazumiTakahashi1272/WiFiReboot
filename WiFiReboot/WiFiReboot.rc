@@ -91,6 +91,7 @@ BEGIN
     CTEXT           "スタティック",IDC_STATIC_DESC,7,14,237,11
     PUSHBUTTON      "",IDCANCEL,234,1,10,9,BS_FLAT | NOT WS_TABSTOP
     PUSHBUTTON      "",IDC_MINIMIZE,222,1,10,9,BS_FLAT | NOT WS_TABSTOP
+    PUSHBUTTON      "",IDC_HELPBTN,7,1,10,10,BS_FLAT
 END
 
 
@@ -100,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,15,0,90
- PRODUCTVERSION 1,15,0,90
+ FILEVERSION 1,15,0,95
+ PRODUCTVERSION 1,15,0,95
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -119,12 +120,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.15.0.90"
+            VALUE "FileVersion", "1.15.0.95"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.15.0.90"
+            VALUE "ProductVersion", "1.15.0.95"
         END
     END
     BLOCK "VarFileInfo"
@@ -161,6 +162,7 @@ END
 IDB_CLOSE               BITMAP                  "res\\buttonclose.bmp"
 IDB_MAIN                BITMAP                  "res\\skinbmp.bmp"
 IDB_MINIMIZE            BITMAP                  "res\\buttonminized.bmp"
+IDB_HELPBTN             BITMAP                  "res\\HelpBtn.bmp"
 #endif    // 日本語 resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -361,6 +361,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\HelpBtn.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\skinbmp.bmp"
 				>
 			</File>

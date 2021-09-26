@@ -80,6 +80,7 @@ public:
 	vector<wlan_Profile*> m_vProfile;
 
 public:
+	CButtonST	m_btnHelp;
 	CButtonST	m_btnCancel;
 	CButtonST	m_btnMinimize;
 
@@ -111,4 +112,5 @@ public:
 	CColorStatic m_ctrlStaticSsid;
 	CColorStatic m_ctrlStaticPwd;
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedHelpbtn();
 };
