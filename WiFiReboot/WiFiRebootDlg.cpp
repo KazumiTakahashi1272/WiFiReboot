@@ -154,6 +154,10 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 大きいアイコンの設定
 	SetIcon(m_hIcon, FALSE);		// 小さいアイコンの設定
 
+	m_pListCtrl->InitSkin();
+	m_pListCtrl->SetBkColor( BKCOLOR );
+	m_pListCtrl->SetTextColor( WHITE/*RGB(222,222,222)*/ );
+
 	int nItemIndex = 0;
 	m_pListCtrl->ModifyStyle(0, LVS_REPORT);
 	m_pListCtrl->SetExtendedStyle(/*LVS_EX_CHECKBOXES |*/ LVS_EX_INFOTIP | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
@@ -161,6 +165,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_pListCtrl->InsertColumn( 1, "BSS Network type", LVCFMT_LEFT, 110 );
 	m_pListCtrl->InsertColumn( 2, "Signal", LVCFMT_LEFT, 50 );
 	m_pListCtrl->InsertColumn( 3, "Security", LVCFMT_LEFT, 70 );
+
+	m_pListCtrl->m_SkinHeaderCtrl.SubclassWindow( m_pListCtrl->GetHeaderCtrl()->m_hWnd );
 
 	m_btnHelp.SetBitmaps( IDB_HELPBTN, RGB(255, 0, 255) );
 	m_btnHelp.DrawBorder( FALSE, TRUE );
@@ -529,7 +535,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 		}
 	}
 
-	m_ctrlCbSSID.SetCurSel( 0 );
+	m_pListCtrl->SendMessage( CB_SETCURSEL, 0, 0 );
 	GetDlgItem(IDC_CB_SSID)->SetFocus();
 
 	OnCbnSelchangeCbSsid();

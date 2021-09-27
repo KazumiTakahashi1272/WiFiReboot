@@ -62,6 +62,7 @@ public:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
 
 protected:
+public:
 	CComboListCtrlExt* m_pListCtrl;
 	CMyComboListCtrl* m_pListCtrl2;
 

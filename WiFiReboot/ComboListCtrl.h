@@ -7,6 +7,11 @@
 // ComboListCtrl.h : header file
 //
 
+#include "SkinListCtrl.h"
+#include "SkinHeaderCtrl.h"
+#include "SkinHorizontalScrollbar.h"
+#include "SkinVerticleScrollbar.h"
+
 #ifndef WMU_CLOSE_CONTROL
 #define WMU_CLOSE_CONTROL					(WM_USER + 32)
 #endif
@@ -18,7 +23,7 @@
 
 class CListComboBox;
 
-class CComboListCtrl : public CListCtrl
+class CComboListCtrl : public CSkinListCtrl
 {
 // Construction
 public:
@@ -30,6 +35,7 @@ protected:
 
 // Attributes
 public:
+	void InitSkin(void);
 
 // Operations
 public:
@@ -56,6 +62,7 @@ protected:
 	afx_msg void OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+	virtual void PreSubclassWindow();
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -101,8 +101,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,15,0,95
- PRODUCTVERSION 1,15,0,95
+ FILEVERSION 1,15,0,100
+ PRODUCTVERSION 1,15,0,100
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -120,12 +120,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.15.0.95"
+            VALUE "FileVersion", "1.15.0.100"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.15.0.95"
+            VALUE "ProductVersion", "1.15.0.100"
         END
     END
     BLOCK "VarFileInfo"
@@ -163,6 +163,19 @@ IDB_CLOSE               BITMAP                  "res\\buttonclose.bmp"
 IDB_MAIN                BITMAP                  "res\\skinbmp.bmp"
 IDB_MINIMIZE            BITMAP                  "res\\buttonminized.bmp"
 IDB_HELPBTN             BITMAP                  "res\\HelpBtn.bmp"
+IDB_COLUMNHEADER_SPAN   BITMAP                  "res\\ColumnHeaderSpan.bmp"
+IDB_COLUMNHEADER_START  BITMAP                  "res\\ColumnHeaderStart.bmp"
+IDB_COLUMNHEADER_END    BITMAP                  "res\\ColumnHeaderEnd.bmp"
+IDB_HORIZONTAL_SCROLLBAR_THUMB BITMAP                  "res\\HorizontalScrollBarThumb.bmp"
+IDB_HORIZONTAL_SCROLLBAR_RIGHTARROW BITMAP                  "res\\HorizontalScrollBarRightArrow.bmp"
+IDB_HORIZONTAL_SCROLLBAR_SPAN BITMAP                  "res\\HorizontalScrollBarSpan.bmp"
+IDB_HORIZONTAL_SCROLLBAR_LEFTARROW BITMAP                  "res\\HorizontalScrollBarLeftArrow.bmp"
+IDB_VERTICLE_SCROLLBAR_UPARROW BITMAP                  "res\\VerticleScrollBarUpArrow.bmp"
+IDB_VERTICLE_SCROLLBAR_SPAN BITMAP                  "res\\VerticleScrollBarSpan.bmp"
+IDB_VERTICLE_SCROLLBAR_THUMB BITMAP                  "res\\VerticleScrollBarThumb.bmp"
+IDB_VERTICLE_SCROLLBAR_DOWNARROW BITMAP                  "res\\VerticleScrollBarDownArrow.bmp"
+IDB_VERTICLE_SCROLLBAR_TOP BITMAP                  "res\\VerticleScrollbarTop.bmp"
+IDB_VERTICLE_SCROLLBAR_BOTTOM BITMAP                  "res\\VerticleScrollbarBottom.bmp"
 #endif    // 日本語 resources
 /////////////////////////////////////////////////////////////////////////////
 

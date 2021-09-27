@@ -25,7 +25,7 @@ CComboListCtrl::~CComboListCtrl()
 {
 }
 
-BEGIN_MESSAGE_MAP(CComboListCtrl, CListCtrl)
+BEGIN_MESSAGE_MAP(CComboListCtrl, CSkinListCtrl)
 	//{{AFX_MSG_MAP(CComboListCtrl)
 	ON_NOTIFY_REFLECT(NM_KILLFOCUS, OnKillfocus)
 	//}}AFX_MSG_MAP
@@ -33,6 +33,10 @@ END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CComboListCtrl message handlers
+void CComboListCtrl::InitSkin()
+{
+	CSkinListCtrl::Init();
+}
 
 void CComboListCtrl::Display(CRect rect)
 {
@@ -61,7 +65,7 @@ BOOL CComboListCtrl::PreTranslateMessage(MSG* pMsg)
 		m_pCombo->SetFocus();
 	}
 
-	return CListCtrl::PreTranslateMessage(pMsg);
+	return CSkinListCtrl::PreTranslateMessage(pMsg);
 }
 
 void CComboListCtrl::OnKillfocus(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -110,7 +114,7 @@ CRect CComboListCtrl::GetDropDownRect()
 	CRect rectHeader;
 	int nHeaderWidth = 0;
 	CHeaderCtrl* pHeaderCtrl = GetHeaderCtrl();
-	for(int i = 0;i < pHeaderCtrl->GetItemCount();++i)
+	for( int i=0 ; i < pHeaderCtrl->GetItemCount() ; ++i )
 	{
 		rectHeader.SetRectEmpty();
 		pHeaderCtrl->GetItemRect(i, &rectHeader);
@@ -122,4 +126,13 @@ CRect CComboListCtrl::GetDropDownRect()
 		rect.right = nDroppedWidth;
 
 	return rect;
+}
+
+void CComboListCtrl::PreSubclassWindow()
+{
+	// TODO: ここに特定なコードを追加するか、もしくは基本クラスを呼び出してください。
+	if(GetHeaderCtrl())
+		m_SkinHeaderCtrl.SubclassWindow(GetHeaderCtrl()->m_hWnd);
+
+	CSkinListCtrl::PreSubclassWindow();
 }

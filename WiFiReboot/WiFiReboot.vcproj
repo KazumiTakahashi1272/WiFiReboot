@@ -233,6 +233,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SkinHeaderCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinHorizontalScrollbar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinVerticleScrollbar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -311,11 +327,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MEMDC.H"
+				>
+			</File>
+			<File
 				RelativePath=".\MyComboListCtrl.h"
 				>
 			</File>
 			<File
 				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinHeaderCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinHorizontalScrollbar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinListCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SkinVerticleScrollbar.h"
 				>
 			</File>
 			<File
@@ -361,11 +397,63 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\ColumnHeaderEnd.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ColumnHeaderSpan.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\ColumnHeaderStart.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\HelpBtn.bmp"
 				>
 			</File>
 			<File
+				RelativePath=".\res\HorizontalScrollBarLeftArrow.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\HorizontalScrollBarRightArrow.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\HorizontalScrollBarSpan.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\HorizontalScrollBarThumb.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\skinbmp.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollbarBottom.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollBarDownArrow.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollBarSpan.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollBarThumb.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollbarTop.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\VerticleScrollBarUpArrow.bmp"
 				>
 			</File>
 			<File
