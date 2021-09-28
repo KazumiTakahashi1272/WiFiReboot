@@ -106,6 +106,12 @@ CWiFiRebootDlg::CWiFiRebootDlg(CWnd* pParent /*=NULL*/)
 	m_hWndRgn = DIBToRgn( m_hBmp, 0x00ff00, FALSE );
 }
 
+CWiFiRebootDlg::~CWiFiRebootDlg()
+{
+	if ( m_pListCtrl )
+		delete m_pListCtrl;
+}
+
 void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
@@ -178,6 +184,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_btnMinimize.DrawBorder( FALSE, TRUE );
 
 	// TODO: èâä˙âªÇÇ±Ç±Ç…í«â¡ÇµÇ‹Ç∑ÅB
+
 
 	m_ctrlDesc.SetTextColor( LIGHTBLUE );
 	m_ctrlDesc.SetBkColor( RGB(175, 199, 223) );

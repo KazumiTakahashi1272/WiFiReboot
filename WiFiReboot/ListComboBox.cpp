@@ -61,6 +61,7 @@ void CListComboBox::PreSubclassWindow()
 	DWORD dwStyle =  WS_POPUP | WS_BORDER;
 	CWnd* pWnd = m_pListCtrl;
 	pWnd->CreateEx(0, WC_LISTVIEW, NULL, dwStyle, rect, GetParent(), 0, NULL);
+
 	m_pListCtrl->Init(this);
 
 	GetClientRect(rect);

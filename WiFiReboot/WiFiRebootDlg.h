@@ -49,6 +49,7 @@ class CWiFiRebootDlg : public CDialog
 // コンストラクション
 public:
 	CWiFiRebootDlg(CWnd* pParent = NULL);	// 標準コンストラクタ
+	virtual ~CWiFiRebootDlg();
 
 	HBITMAP m_hBmp;
 	HRGN m_hClientRgn;
@@ -61,7 +62,6 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV サポート
 
-protected:
 public:
 	CComboListCtrlExt* m_pListCtrl;
 	CMyComboListCtrl* m_pListCtrl2;

@@ -9,6 +9,7 @@
 #include "memdc.h"
 /////////////////////////////////////////////////////////////////////////////
 // CSkinVerticleScrollbar window
+class CSkinListCtrl;
 
 class CSkinVerticleScrollbar : public CStatic
 {
@@ -29,7 +30,7 @@ public:
 
 // Implementation
 public:
-	CListCtrl* pList;
+	CSkinListCtrl* pList;
 	void LimitThumbPosition();
 	void Draw();
 	void UpdateThumbPosition();

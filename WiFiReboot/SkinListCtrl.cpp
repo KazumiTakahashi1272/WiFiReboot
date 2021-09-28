@@ -136,12 +136,13 @@ void CSkinListCtrl::Init()
 	InitializeFlatSB( m_hWnd );
 	FlatSB_EnableScrollBar( m_hWnd, SB_BOTH, ESB_DISABLE_BOTH );
 
-	CWnd* pParent = GetParent();
+	CWnd* pParent = GetParent()->GetParentOwner();
 
 	//Create scrollbars at runtime
 	m_SkinVerticleScrollbar.Create(NULL, WS_CHILD|SS_LEFT|SS_NOTIFY|WS_VISIBLE|WS_GROUP,CRect(0,0,0,0), pParent);
 	m_SkinHorizontalScrollbar.Create(NULL, WS_CHILD|SS_LEFT|SS_NOTIFY|WS_VISIBLE|WS_GROUP,CRect(0,0,0,0), pParent);
-	m_SkinVerticleScrollbar.pList = this;
+
+	m_SkinVerticleScrollbar.pList = reinterpret_cast<CSkinListCtrl*>(this);
 	m_SkinHorizontalScrollbar.pList = this;
 
 	//call this to position the scrollbars properly
