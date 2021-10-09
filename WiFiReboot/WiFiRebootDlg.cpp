@@ -1056,37 +1056,37 @@ void CWiFiRebootDlg::OnBnClickedHelpbtn()
     //ファイルの説明(FileDescription)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\FileDescription", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("ファイルの説明\t[%s]", pVer);
+    csBuf.Format("ファイルの説明\t%s", pVer);
     csMsg = csBuf;
 
     //ファイルバージョン(FileVersion)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\FileVersion", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("ファイルバージョン\t[%s]", pVer);
+    csBuf.Format("ファイルバージョン\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
 
     //製品名(ProductName)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\ProductName", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("製品名\t\t[%s]", pVer);
+    csBuf.Format("製品名\t\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
 
     //製品バージョン(ProductVersion)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\ProductVersion", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("プロダクトバージョン\t[%s]", pVer);
+    csBuf.Format("プロダクトバージョン\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
  
     //著作権(LegalCopyright)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\LegalCopyright", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("著作権\t\t[%s]", pVer);
+    csBuf.Format("著作権\t\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
 
     //会社名(CompanyName)
     wsprintf(name, "\\StringFileInfo\\%04x%04x\\CompanyName", lpTran[0].wLanguage, lpTran[0].wCodePage);
     ::VerQueryValue(pBlock, name, &pVer, &uDmy);
-    csBuf.Format("会社名\t\t[%s]", pVer);
+    csBuf.Format("会社名\t\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
 
     //メッセージボックスで結果表示
