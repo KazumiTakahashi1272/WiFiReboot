@@ -162,7 +162,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 	m_pListCtrl->InitSkin();
 	m_pListCtrl->SetBkColor( BKCOLOR );
-	m_pListCtrl->SetTextColor( WHITE/*RGB(222,222,222)*/ );
+	m_pListCtrl->SetTextColor( BLUE );
 
 	int nItemIndex = 0;
 	m_pListCtrl->ModifyStyle(0, LVS_REPORT);
@@ -170,7 +170,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_pListCtrl->InsertColumn( 0, "SSID", LVCFMT_LEFT, 200 );
 	m_pListCtrl->InsertColumn( 1, "BSS Network type", LVCFMT_LEFT, 110 );
 	m_pListCtrl->InsertColumn( 2, "Signal", LVCFMT_LEFT, 50 );
-	m_pListCtrl->InsertColumn( 3, "Security", LVCFMT_LEFT, 70 );
+	m_pListCtrl->InsertColumn( 3, "Security", LVCFMT_LEFT, 50 );
+	m_pListCtrl->InsertColumn( 4, "Auth Algorithm", LVCFMT_LEFT, 100 );
 
 	m_pListCtrl->m_SkinHeaderCtrl.SubclassWindow( m_pListCtrl->GetHeaderCtrl()->m_hWnd );
 
@@ -449,31 +450,40 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						m_pListCtrl->SetItemText( nItemIndex, 3, "No" );
 					}
 
+					pProfile->AuthAlgorithm = pBssEntry->dot11DefaultAuthAlgorithm;
 					ss << "  Default AuthAlgorithm[" << j << "]: ";
 					switch ( pBssEntry->dot11DefaultAuthAlgorithm )
 					{
 					default:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "Other" );
 						ss << "Other (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_80211_OPEN:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "802.11 Open" );
 						ss << "802.11 Open (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_80211_SHARED_KEY:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "802.11 Shared" );
 						ss << "802.11 Shared (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "WPA" );
 						ss << "WPA (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA_PSK:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "WPA-PSK" );
 						ss << "WPA-PSK (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_WPA_NONE:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "WPA-None" );
 						ss << "WPA-None (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_RSNA:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "RSNA" );
 						ss << "RSNA (" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					case DOT11_AUTH_ALGO_RSNA_PSK:
+						m_pListCtrl->SetItemText( nItemIndex, 4, "RSNA with PSK" );
 						ss << "RSNA with PSK(" << pBssEntry->dot11DefaultAuthAlgorithm << ")" << endl; REPORT;
 						break;
 					}

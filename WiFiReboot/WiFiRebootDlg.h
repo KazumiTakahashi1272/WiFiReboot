@@ -35,6 +35,7 @@ typedef struct _WLAN_PROFILE
 	string PassKey;
 	int SignalQuality;
 	bool SecurityEnabled;
+	int	AuthAlgorithm;
 } wlan_Profile;
 
 typedef struct _WLAN_INTERFACE

@@ -50,13 +50,13 @@ void CSkinHeaderCtrl::OnPaint()
 	CDC bitmapDC;
 	bitmapDC.CreateCompatibleDC(&dc);
 	
-	memDC.FillSolidRect(&rect, RGB(76,85,118));
+	memDC.FillSolidRect(&rect, RED/*RGB(76,85,118)*/);
 
 	CBitmap bitmapSpan;
 	bitmapSpan.LoadBitmap(IDB_COLUMNHEADER_SPAN);
 	CBitmap* pOldBitmapSpan = bitmapDC.SelectObject(&bitmapSpan);
 
-	memDC.StretchBlt(rect.left+2, 0, rect.Width(), 12, &bitmapDC, 0, 0, 1, 12, SRCCOPY);
+	memDC.StretchBlt(rect.left+2, 0, rect.Width(), 24, &bitmapDC, 0, 0, 1, 12, SRCCOPY);
 
 	bitmapDC.SelectObject(pOldBitmapSpan);
 	bitmapSpan.DeleteObject();
@@ -95,13 +95,13 @@ void CSkinHeaderCtrl::OnPaint()
 		if(hditem1.iOrder==0)
 		{
 			pOldBitmap = bitmapDC.SelectObject(&bitmap);
-			memDC.BitBlt(rect.left,rect.top,2,12,&bitmapDC,0,0,SRCCOPY);
+			memDC.BitBlt(rect.left,rect.top,0,13,&bitmapDC,0,0,SRCCOPY);
 		}
 		else
 		{
-			memDC.BitBlt(rect.left-1,rect.top,2,12,&bitmapDC,0,0,SRCCOPY);
+			memDC.BitBlt(rect.left-1,rect.top,0,13,&bitmapDC,0,0,SRCCOPY);
 			pOldBitmap = bitmapDC.SelectObject(&bitmap2);
-			memDC.BitBlt(rect.left+1,rect.top,1,12,&bitmapDC,0,0,SRCCOPY);
+			memDC.BitBlt(rect.left+1,rect.top,0,13,&bitmapDC,0,0,SRCCOPY);
 		}
 
 		bitmapDC.SelectObject(pOldBitmap);
@@ -111,14 +111,14 @@ void CSkinHeaderCtrl::OnPaint()
 		
 		CBitmap* pOldBitmap2 = bitmapDC.SelectObject(&bitmap2);
 		
-		memDC.StretchBlt(rect.left+2, 0, nWidth, 1, &bitmapDC, 0,0, 1, 12, SRCCOPY);
+		memDC.StretchBlt(rect.left+0, 0, nWidth, 1, &bitmapDC, 0,0, 1, 12, SRCCOPY);
 
 		bitmapDC.SelectObject(pOldBitmap2);
 		
 		
 		//draw the end piece of the column header
 		CBitmap* pOldBitmap3 = bitmapDC.SelectObject(&bitmap3);
-		memDC.BitBlt((rect.right-2), 0, 2, 12, &bitmapDC,0,0,SRCCOPY);
+		memDC.BitBlt((rect.right-2), 0, 0, 12, &bitmapDC,0,0,SRCCOPY);
 		bitmapDC.SelectObject(pOldBitmap3);
 		
 		//Get all the info for the current
@@ -142,7 +142,8 @@ void CSkinHeaderCtrl::OnPaint()
 		CFont font;
 		LOGFONT lf;
 		memset(&lf, 0, sizeof(LOGFONT));
-		lf.lfHeight = 12;
+		lf.lfHeight = 15;
+		lf.lfWeight = FW_MEDIUM;
 		strcpy(lf.lfFaceName, "ÉÅÉCÉäÉI");
 		font.CreateFontIndirect(&lf);
 		CFont* def_font = memDC.SelectObject(&font);
