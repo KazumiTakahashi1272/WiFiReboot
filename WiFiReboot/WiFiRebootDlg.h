@@ -29,6 +29,17 @@ using namespace std;         //  –¼‘O‹óŠÔŽw’è
 #include "BtnST.h"
 #include "Logger.h"
 
+typedef struct _XML_ITEM
+{
+	string itemSsid;
+	string itemPass;
+} xml_item;
+
+typedef struct _XML_ITEMLIST
+{
+	std::vector<xml_item*> vItem;
+} xml_itemlist;
+
 typedef struct _WLAN_PROFILE
 {
 	string Ssid;
@@ -36,6 +47,8 @@ typedef struct _WLAN_PROFILE
 	int SignalQuality;
 	bool SecurityEnabled;
 	int	AuthAlgorithm;
+
+	string msg;
 } wlan_Profile;
 
 typedef struct _WLAN_INTERFACE
@@ -80,6 +93,8 @@ protected:
 public:
 	vector<wlan_Interface*>	m_vInterface;
 	vector<wlan_Profile*> m_vProfile;
+
+	vector<xml_itemlist*> m_vItemList;
 
 public:
 	CButtonST	m_btnHelp;

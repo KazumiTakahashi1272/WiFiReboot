@@ -8,7 +8,7 @@
 //	Version:	See GetVersionC() or GetVersionI()
 //
 //	Created:	xx/xxxx/1998
-//	Updated:	17/October/2001
+//	Updated:	25/November/2002
 //
 //	Author:		Davide Calabro'		davide_calabro@yahoo.com
 //									http://www.softechsoftware.it
@@ -28,7 +28,7 @@
 //	------------
 //	THIS SOFTWARE IS FREE FOR PERSONAL USE OR FREEWARE APPLICATIONS.
 //	IF YOU USE THIS SOFTWARE IN COMMERCIAL OR SHAREWARE APPLICATIONS YOU
-//	ARE GENTLY ASKED TO DONATE 1$ (ONE U.S. DOLLAR) TO THE AUTHOR:
+//	ARE GENTLY ASKED TO DONATE 5$ (FIVE U.S. DOLLARS) TO THE AUTHOR:
 //
 //		Davide Calabro'
 //		P.O. Box 65
@@ -37,6 +37,13 @@
 //
 #ifndef _BTNST_H
 #define _BTNST_H
+
+// Uncomment the following 2 lines to enable support for BCMenu class
+//#define	BTNST_USE_BCMENU
+//#include "BCMenu.h"
+
+// Uncomment the following line to enable support for sound effects
+//#define	BTNST_USE_SOUND
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -58,6 +65,17 @@
 #ifndef	BTNST_INVALIDALIGN
 #define	BTNST_INVALIDALIGN				4
 #endif
+#ifndef	BTNST_BADPARAM
+#define	BTNST_BADPARAM					5
+#endif
+#ifndef	BTNST_INVALIDPRESSEDSTYLE
+#define	BTNST_INVALIDPRESSEDSTYLE		6
+#endif
+
+// Dummy identifier for grayscale icon
+#ifndef	BTNST_AUTO_GRAY
+#define	BTNST_AUTO_GRAY					(HICON)(0xffffffff - 1L)
+#endif
 
 class CButtonST : public CButton
 {
@@ -67,7 +85,8 @@ public:
 
     enum	{	ST_ALIGN_HORIZ	= 0,			// Icon/bitmap on the left, text on the right
 				ST_ALIGN_VERT,					// Icon/bitmap on the top, text on the bottom
-				ST_ALIGN_HORIZ_RIGHT			// Icon/bitmap on the right, text on the left
+				ST_ALIGN_HORIZ_RIGHT,			// Icon/bitmap on the right, text on the left
+				ST_ALIGN_OVERLAP				// Icon/bitmap on the same space as text
 			};
 
 	enum	{	BTNST_COLOR_BK_IN	= 0,		// Background color when mouse is INside
@@ -80,6 +99,10 @@ public:
 				BTNST_MAX_COLORS
 			};
 
+    enum	{	BTNST_PRESSED_LEFTRIGHT = 0,	// Pressed style from left to right (as usual)
+				BTNST_PRESSED_TOPBOTTOM			// Pressed style from top to bottom
+			};
+
 	// ClassWizard generated virtual function overrides
     //{{AFX_VIRTUAL(CButtonST)
 	public:
@@ -87,19 +110,20 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void PreSubclassWindow();
-	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//}}AFX_VIRTUAL
 
 public:
 	DWORD SetDefaultColors(BOOL bRepaint = TRUE);
 	DWORD SetColor(BYTE byColorIndex, COLORREF crColor, BOOL bRepaint = TRUE);
 	DWORD GetColor(BYTE byColorIndex, COLORREF* crpColor);
+	DWORD OffsetColor(BYTE byColorIndex, short shOffset, BOOL bRepaint = TRUE);
 
 	DWORD SetCheck(int nCheck, BOOL bRepaint = TRUE);
 	int GetCheck();
 
 	DWORD SetURL(LPCTSTR lpszURL = NULL);
 	void DrawTransparent(BOOL bRepaint = FALSE);
+	DWORD SetBk(CDC* pDC);
 
 	BOOL GetDefault();
 	DWORD SetAlwaysTrack(BOOL bAlwaysTrack = TRUE);
@@ -107,11 +131,13 @@ public:
 	void SetTooltipText(int nText, BOOL bActivate = TRUE);
 	void SetTooltipText(LPCTSTR lpszText, BOOL bActivate = TRUE);
 	void ActivateTooltip(BOOL bEnable = TRUE);
+	DWORD EnableBalloonTooltip();
 
 	DWORD SetBtnCursor(int nCursorId = NULL, BOOL bRepaint = TRUE);
 
 	DWORD SetFlat(BOOL bFlat = TRUE, BOOL bRepaint = TRUE);
 	DWORD SetAlign(BYTE byAlign, BOOL bRepaint = TRUE);
+	DWORD SetPressedStyle(BYTE byStyle, BOOL bRepaint = TRUE);
 
 	DWORD DrawBorder(BOOL bDrawBorder = TRUE, BOOL bRepaint = TRUE);
 	DWORD DrawFlatFocus(BOOL bDrawFlatFocus, BOOL bRepaint = TRUE);
@@ -122,10 +148,25 @@ public:
 	DWORD SetBitmaps(int nBitmapIn, COLORREF crTransColorIn, int nBitmapOut = NULL, COLORREF crTransColorOut = 0);
 	DWORD SetBitmaps(HBITMAP hBitmapIn, COLORREF crTransColorIn, HBITMAP hBitmapOut = NULL, COLORREF crTransColorOut = 0);
 
-	DWORD SetMenu(UINT nMenu, HWND hParentWnd, BOOL bRepaint = TRUE);
+	void SizeToContent();
 
-	static short GetVersionI()		{return 34;}
-	static LPCTSTR GetVersionC()	{return (LPCTSTR)_T("3.4");}
+#ifdef	BTNST_USE_BCMENU
+	DWORD SetMenu(UINT nMenu, HWND hParentWnd, BOOL bWinXPStyle = TRUE, UINT nToolbarID = NULL, CSize sizeToolbarIcon = CSize(16, 16), COLORREF crToolbarBk = RGB(255, 0, 255), BOOL bRepaint = TRUE);
+#else
+	DWORD SetMenu(UINT nMenu, HWND hParentWnd, BOOL bRepaint = TRUE);
+#endif
+	DWORD SetMenuCallback(HWND hWnd, UINT nMessage, LPARAM lParam = 0);
+
+#ifdef	BTNST_USE_SOUND
+	DWORD SetSound(LPCTSTR lpszSound, HMODULE hMod = NULL, BOOL bPlayOnClick = FALSE, BOOL bPlayAsync = TRUE);
+#endif
+
+	static short GetVersionI()		{return 38;}
+	static LPCTSTR GetVersionC()	{return (LPCTSTR)_T("3.8");}
+
+	BOOL	m_bShowDisabledBitmap;
+	POINT	m_ptImageOrg;
+	POINT	m_ptPressedOffset;
 
 protected:
     //{{AFX_MSG(CButtonST)
@@ -140,9 +181,15 @@ protected:
 	afx_msg UINT OnGetDlgCode();
 	//}}AFX_MSG
 
+#ifdef	BTNST_USE_BCMENU
+	afx_msg LRESULT OnMenuChar(UINT nChar, UINT nFlags, CMenu* pMenu);
+	afx_msg void OnMeasureItem(int nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+#endif
+
 	afx_msg HBRUSH CtlColor(CDC* pDC, UINT nCtlColor);
-	virtual DWORD OnDrawBackground(CDC* pDC, LPCRECT pRect);
-	virtual DWORD OnDrawBorder(CDC* pDC, LPCRECT pRect);
+	HICON CreateGrayscaleIcon(HICON hIcon);
+	virtual DWORD OnDrawBackground(CDC* pDC, CRect* pRect);
+	virtual DWORD OnDrawBorder(CDC* pDC, CRect* pRect);
 
 	BOOL		m_bIsFlat;			// Is a flat button?
 	BOOL		m_bMouseOnButton;	// Is mouse over the button?
@@ -156,11 +203,18 @@ protected:
 	BOOL		m_bDrawBorder;		// Draw border?
 	BOOL		m_bDrawFlatFocus;	// Draw focus rectangle for flat button?
 	COLORREF	m_crColors[BTNST_MAX_COLORS];	// Colors to be used
-	HMENU		m_hMenu;			// Handle to associated menu
 	HWND		m_hParentWndMenu;	// Handle to window for menu selection
 	BOOL		m_bMenuDisplayed;	// Is menu displayed ?
 
+#ifdef	BTNST_USE_BCMENU
+	BCMenu		m_menuPopup;		// BCMenu class instance
+#else
+	HMENU		m_hMenu;			// Handle to associated menu
+#endif
+
 private:
+	LRESULT OnSetCheck(WPARAM wParam, LPARAM lParam);
+	LRESULT OnGetCheck(WPARAM wParam, LPARAM lParam);
 	LRESULT OnSetStyle(WPARAM wParam, LPARAM lParam);
 	LRESULT OnMouseLeave(WPARAM wParam, LPARAM lParam);
 
@@ -168,8 +222,9 @@ private:
 	void FreeResources(BOOL bCheckForNULL = TRUE);
 	void PrepareImageRect(BOOL bHasTitle, RECT* rpItem, CRect* rpTitle, BOOL bIsPressed, DWORD dwWidth, DWORD dwHeight, CRect* rpImage);
 	HBITMAP CreateBitmapMask(HBITMAP hSourceBitmap, DWORD dwWidth, DWORD dwHeight, COLORREF crTransColor);
-	void DrawTheIcon(CDC* pDC, BOOL bHasTitle, RECT* rpItem, CRect* rpTitle, BOOL bIsPressed, BOOL bIsDisabled);
-	void DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT *rItem, CRect *rCaption, BOOL bIsPressed, BOOL bIsDisabled);
+	virtual void DrawTheIcon(CDC* pDC, BOOL bHasTitle, RECT* rpItem, CRect* rpCaption, BOOL bIsPressed, BOOL bIsDisabled);
+	virtual void DrawTheBitmap(CDC* pDC, BOOL bHasTitle, RECT* rpItem, CRect* rpCaption, BOOL bIsPressed, BOOL bIsDisabled);
+	virtual void DrawTheText(CDC* pDC, LPCTSTR lpszText, RECT* rpItem, CRect* rpCaption, BOOL bIsPressed, BOOL bIsDisabled);
 	void PaintBk(CDC* pDC);
 
 	void InitToolTip();
@@ -184,6 +239,7 @@ private:
 	BOOL		m_bAlwaysTrack;		// Always hilight button?
 	int			m_nCheck;			// Current value for checkbox
 	UINT		m_nTypeStyle;		// Button style
+	DWORD		m_dwToolTipStyle;	// Style of tooltip control
 
 	TCHAR		m_szURL[_MAX_PATH];	// URL to open when clicked
 
@@ -207,8 +263,34 @@ private:
 	} STRUCT_BITMAPS;
 #pragma pack()
 
+#pragma pack(1)
+	typedef struct _STRUCT_CALLBACK
+	{
+		HWND		hWnd;			// Handle to window
+		UINT		nMessage;		// Message identifier
+		WPARAM		wParam;
+		LPARAM		lParam;
+	} STRUCT_CALLBACK;
+#pragma pack()
+
 	STRUCT_ICONS	m_csIcons[2];
 	STRUCT_BITMAPS	m_csBitmaps[2];
+
+	STRUCT_CALLBACK	m_csCallbacks;
+
+#ifdef	BTNST_USE_SOUND
+#pragma pack(1)
+	typedef struct _STRUCT_SOUND
+	{
+		TCHAR		szSound[_MAX_PATH];
+		LPCTSTR		lpszSound;
+		HMODULE		hMod;
+		DWORD		dwFlags;
+	} STRUCT_SOUND;
+#pragma pack()
+
+	STRUCT_SOUND	m_csSounds[2];	// Index 0 = Over	1 = Clicked
+#endif
 
 	DECLARE_MESSAGE_MAP()
 };

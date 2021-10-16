@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MsgDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MyComboListCtrl.cpp"
 				>
 			</File>
@@ -269,6 +273,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ThemeHelperST.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WiFiReboot.cpp"
 				>
 			</File>
@@ -278,6 +286,10 @@
 			</File>
 			<File
 				RelativePath=".\XPButton.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XPStyleButtonST.cpp"
 				>
 			</File>
 		</Filter>
@@ -331,6 +343,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MsgDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MyComboListCtrl.h"
 				>
 			</File>
@@ -363,6 +379,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ThemeHelperST.h"
+				>
+			</File>
+			<File
 				RelativePath=".\WiFiReboot.h"
 				>
 			</File>
@@ -372,6 +392,10 @@
 			</File>
 			<File
 				RelativePath=".\XPButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\XPStyleButtonST.h"
 				>
 			</File>
 		</Filter>
@@ -394,6 +418,10 @@
 			</File>
 			<File
 				RelativePath=".\res\buttonminized.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\CANCEL_32x32x256.ico"
 				>
 			</File>
 			<File
@@ -426,6 +454,10 @@
 			</File>
 			<File
 				RelativePath=".\res\HorizontalScrollBarThumb.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\OK_32x32x8.ico"
 				>
 			</File>
 			<File

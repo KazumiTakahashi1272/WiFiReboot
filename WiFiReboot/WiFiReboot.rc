@@ -71,6 +71,8 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\WiFiReboot.ico"
+IDI_CANCEL              ICON                    "res\\CANCEL_32x32x256.ico"
+IDI_OK                  ICON                    "res\\OK_32x32x8.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -94,6 +96,16 @@ BEGIN
     PUSHBUTTON      "",IDC_HELPBTN,7,1,10,10,BS_FLAT
 END
 
+IDD_MSG_DIALOG DIALOGEX 0, 0, 316, 202
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "WiFiの再起動を試みますか？"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "OK",IDOK,76,170,80,25
+    DEFPUSHBUTTON   "キャンセル",IDCANCEL,160,170,80,25
+    LTEXT           "",IDC_MSG,7,7,302,150
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -101,8 +113,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,15,0,110
- PRODUCTVERSION 1,15,0,110
+ FILEVERSION 1,16,0,121
+ PRODUCTVERSION 1,16,0,121
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -120,12 +132,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.15.0.110"
+            VALUE "FileVersion", "1.16.0.121"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.15.0.110"
+            VALUE "ProductVersion", "1.16.0.121"
         END
     END
     BLOCK "VarFileInfo"
@@ -149,6 +161,14 @@ BEGIN
         RIGHTMARGIN, 244
         TOPMARGIN, 1
         BOTTOMMARGIN, 114
+    END
+
+    IDD_MSG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 195
     END
 END
 #endif    // APSTUDIO_INVOKED

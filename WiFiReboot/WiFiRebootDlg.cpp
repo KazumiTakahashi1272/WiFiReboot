@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "WiFiReboot.h"
 #include "WiFiRebootDlg.h"
+#include "MsgDlg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +30,7 @@ using namespace CPlusPlusLogging;
 static bool bScanWait = true;
 static std::stringstream ss;
 static string s;
+static string item;
 
 // Log file name. File name should be change from here only
 //const string logFileName = X;
@@ -36,7 +38,7 @@ static string s;
 
 #define wlan_notification_acm_scan_list_refresh		0x0000001a
 #define WLAN_PROFILE_GET_PLAINTEXT_KEY				0x00000004
-#define REPORT	s = ss.str(); MsgReporter( s.c_str() );  ss.str( "" ); ss.clear(std::stringstream::goodbit);
+#define REPORT	s = ss.str(); item += s; MsgReporter( s.c_str() );  ss.str( "" ); ss.clear(std::stringstream::goodbit);
 
 void CWiFiRebootDlg::WlanNotification(WLAN_NOTIFICATION_DATA *wlanNotifData, VOID *p)
 {
@@ -247,6 +249,9 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 
 		for ( i=0 ; i < (int)pIfList->dwNumberOfItems ; i++ )
 		{
+			xml_itemlist* pItemList = new xml_itemlist;
+			//m_vItemList.push_back( pItemList );
+
 			wlan_Interface* pInterface = new wlan_Interface;
 			m_vInterface.push_back( pInterface );
 
@@ -260,6 +265,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			{
 				for (DWORD j = 0 ; j < pProfileList->dwNumberOfItems ; j++ )
 				{
+					xml_item* pItem = new xml_item;
+
 					LPWSTR lpszXmlProfile;
 					DWORD dwFlags = WLAN_PROFILE_GET_PLAINTEXT_KEY | WLAN_PROFILE_USER;
 					DWORD dwAccess = WLAN_READ_ACCESS;
@@ -286,8 +293,14 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						strKey = CString(((LPCTSTR)strXml) + nFirstIndex + 13, nLastIndex - (nFirstIndex + 13));
 
 						ss << "  SSID[" << strSSID << "] = " << strKey << endl; REPORT;
+
+						pItem->itemSsid = strSSID;
+						pItem->itemPass = strKey;
+						pItemList->vItem.push_back( pItem );
 					}
 				}
+
+				m_vItemList.push_back( pItemList );
 			}
 
 			iRet = StringFromGUID2( pIfInfo->InterfaceGuid, (LPOLESTR)&GuidString, sizeof(GuidString) / sizeof(*GuidString) );
@@ -296,7 +309,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 			m_ctrlDesc.SetWindowText( CW2A(pIfInfo->strInterfaceDescription) );
 
 			ss << "  Interface Description[" << i << "]: " <<  pIfInfo->strInterfaceDescription << endl; REPORT;
-			ss << "  Interface State[" << i << "]\t ";
+			ss << "  Interface State[" << i << "] ";
 
 			switch ( pIfInfo->isState )
 			{
@@ -362,12 +375,14 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 				ss << "---------------------------------" << endl; REPORT;
 				for ( j=0 ; j < pBssList->dwNumberOfItems ; j++ )
 				{
+					item = "";
+
 					wlan_Profile* pProfile = new wlan_Profile;
 
 					pBssEntry = (WLAN_AVAILABLE_NETWORK *)& pBssList->Network[j];
-					ss << "  Profile Name[" << j << "]:  " << pBssEntry->strProfileName << endl; REPORT;
+					ss << "  Profile Name[" << j << "]: " << pBssEntry->strProfileName << endl; REPORT;
 
-					ss << "  SSID[" << j << "]:\t\t ";
+					ss << "  SSID[" << j << "]: ";
 					if ( pBssEntry->dot11Ssid.uSSIDLength == 0 )
 					{
 						ss << endl; REPORT;
@@ -391,7 +406,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						pProfile->Ssid = ssid;
 					}
 
-					ss << "  BSS Network type[" << j << "]:\t ";
+					ss << "  BSS Network type[" << j << "]: ";
 					switch ( pBssEntry->dot11BssType )
 					{
 					default:
@@ -411,9 +426,9 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					}
 					m_pListCtrl->SetItemText( nItemIndex, 1, str );
 
-					ss << "  Number of BSSIDs[" << j << "]:\t " << pBssEntry->uNumberOfBssids << endl; REPORT;
+					ss << "  Number of BSSIDs[" << j << "]: " << pBssEntry->uNumberOfBssids << endl; REPORT;
 
-					ss << "  Connectable[" << j << "]:\t ";
+					ss << "  Connectable[" << j << "]: ";
 					if ( pBssEntry->bNetworkConnectable )
 					{
 						ss << "Yes" << endl; REPORT;
@@ -421,10 +436,10 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					else
 					{
 						ss << "No" << endl;
-						ss << "  Not connectable WLAN_REASON_CODE value[" << j << "]:\t " << pBssEntry->wlanNotConnectableReason << endl; REPORT;
+						ss << "  Not connectable WLAN_REASON_CODE value[" << j << "]: " << pBssEntry->wlanNotConnectableReason << endl; REPORT;
 					}
 
-					ss << "  Number of PHY types supported[" << j << "]:\t " << pBssEntry->uNumberOfPhyTypes << endl; REPORT;
+					ss << "  Number of PHY types supported[" << j << "]: " << pBssEntry->uNumberOfPhyTypes << endl; REPORT;
 
 					if ( pBssEntry->wlanSignalQuality == 0 )
 						iRSSI = -100;
@@ -432,11 +447,11 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						iRSSI = -50;
 					else
 						iRSSI = -100 + (pBssEntry->wlanSignalQuality / 2);
-					ss << "  Signal Quality[" << j << "]:\t " << std::dec << pBssEntry->wlanSignalQuality << "(RSSI: " << std::dec << iRSSI << " dBm)" << endl; REPORT;
+					ss << "  Signal Quality[" << j << "]: " << std::dec << pBssEntry->wlanSignalQuality << "(RSSI: " << std::dec << iRSSI << " dBm)" << endl; REPORT;
 					str.Format( "%d", pBssEntry->wlanSignalQuality );
 					m_pListCtrl->SetItemText( nItemIndex, 2, str );
 
-					ss << "  Security Enabled[" << j << "]:\t ";
+					ss << "  Security Enabled[" << j << "]: ";
 					if ( pBssEntry->bSecurityEnabled )
 					{
 						pProfile->SecurityEnabled = true;
@@ -514,7 +529,7 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 						break;
 					}
 
-					ss << "  Flags[" << j << "]:\t 0x" << std::hex << pBssEntry->dwFlags;
+					ss << "  Flags[" << j << "]: 0x" << std::hex << pBssEntry->dwFlags;
 					if (pBssEntry->dwFlags)
 					{
 						if (pBssEntry->dwFlags & WLAN_AVAILABLE_NETWORK_CONNECTED)
@@ -529,6 +544,8 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 					pInterface->vProfile.push_back( pProfile );
 
 					nItemIndex++;
+
+					pProfile->msg = item;
 				}
 			}
 		}
@@ -578,6 +595,24 @@ void CWiFiRebootDlg::OnBnClickedCancel()
 
 		delete (*itrInt);
 		itrInt = m_vInterface.erase( itrInt );
+	}
+
+	vector<xml_itemlist*>::iterator itrItemList = m_vItemList.begin();
+	while ( itrItemList != m_vItemList.end() )
+	{
+		xml_itemlist* pItemList = *itrItemList;
+
+		vector<xml_item*>::iterator itrItem = pItemList->vItem.begin();
+		while ( itrItem != pItemList->vItem.end() )
+		{
+			xml_item* pItem = *itrItem;
+
+			delete (*itrItem);
+			itrItem = pItemList->vItem.erase( itrItem );
+		}
+
+		delete (*itrItemList);
+		itrItemList = m_vItemList.erase( itrItemList );
 	}
 
 	OnCancel();
@@ -882,11 +917,6 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	UpdateData();
 
-	m_ctrlRebootProg.SetRange( 0, 7 );
-
-	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
-	GetDlgItem(IDC_PASSWORD)->EnableWindow( FALSE );
-
 	CString str, str2, str3;
 	std::string cmd1( "cmd /c netsh wlan disconnect" );
 	std::string cmd2( "cmd /c netsh interface set interface name=Wi-Fi admin=disabled" );
@@ -901,6 +931,14 @@ void CWiFiRebootDlg::OnBnClickedWifiReboot()
 
 	m_ctrlPsw.GetWindowText( str2 );
 	std::string psw( str2.GetBuffer() );
+
+	CMsgDlg mm = CMsgDlg( ssid.c_str(), this );
+	if ( IDOK != mm.DoModal() )
+		return;
+
+	m_ctrlRebootProg.SetRange( 0, 7 );
+	GetDlgItem(IDC_WIFI_REBOOT)->EnableWindow( FALSE );
+	GetDlgItem(IDC_PASSWORD)->EnableWindow( FALSE );
 
 	m_crypto.m_encryptKey = "Sample_Key";	// à√çÜâªÉLÅ[ï∂éöóÒ
 	m_crypto.m_hKey = keyHCU;
@@ -1103,3 +1141,5 @@ void CWiFiRebootDlg::OnBnClickedHelpbtn()
     AfxMessageBox(csMsg, MB_ICONINFORMATION);
     delete[] pBlock;
 }
+
+
