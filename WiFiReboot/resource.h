@@ -23,7 +23,6 @@
 #define IDB_VERTICLE_SCROLLBAR_BOTTOM   250
 #define IDD_MSG_DIALOG                  300
 #define IDI_CANCEL                      301
-#define IDI_ICON1                       302
 #define IDI_OK                          302
 #define IDC_WIFI_REBOOT                 1001
 #define IDC_CB_SSID                     1002
@@ -42,7 +41,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        303
+#define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           101

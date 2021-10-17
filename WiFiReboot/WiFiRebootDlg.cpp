@@ -1137,9 +1137,23 @@ void CWiFiRebootDlg::OnBnClickedHelpbtn()
     csBuf.Format("会社名\t\t%s", pVer);
     csMsg += ("\r\n" + csBuf);
 
-    //メッセージボックスで結果表示
-    AfxMessageBox(csMsg, MB_ICONINFORMATION);
     delete[] pBlock;
+
+    //メッセージボックスで結果表示
+	MSGBOXPARAMS mbp;
+	memset( &mbp, 0, sizeof(mbp) );
+
+	mbp.cbSize = sizeof MSGBOXPARAMS; 
+	mbp.hwndOwner = GetSafeHwnd(); 
+	mbp.hInstance = AfxGetInstanceHandle(); 
+	mbp.lpszText = csMsg;
+
+	mbp.dwLanguageId = 0x0411;
+	mbp.lpszCaption = AfxGetAppName();
+	mbp.dwStyle = MB_USERICON;
+	mbp.lpszIcon = MAKEINTRESOURCE( IDR_MAINFRAME );
+
+	::MessageBoxIndirect( &mbp );
 }
 
 

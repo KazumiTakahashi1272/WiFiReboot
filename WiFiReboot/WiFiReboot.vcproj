@@ -457,6 +457,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\kazumi1.bin"
+				>
+			</File>
+			<File
 				RelativePath=".\res\OK_32x32x8.ico"
 				>
 			</File>
