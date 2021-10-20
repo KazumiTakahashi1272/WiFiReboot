@@ -36,6 +36,10 @@
 #define IDC_STATIC_PWD                  1009
 #define IDC_HELPBTN                     1010
 #define IDC_MSG                         1011
+#define IDC_HOMEPAGELINK                1012
+#define IDC_EMAILLINK                   1013
+//#define IDS_MAILADDR                    1014
+//#define IDS_WEBADDR                     1015
 
 // Next default values for new objects
 // 
@@ -43,7 +47,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        304
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

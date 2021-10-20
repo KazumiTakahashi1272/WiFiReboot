@@ -23,6 +23,7 @@
 #include "ListComboBox.h"
 #include "ComboListCtrlExt.h"
 #include "MyComboListCtrl.h"
+#include "HyperLink.h"
 
 using namespace std;         //  –¼‘O‹óŠÔw’è
 
@@ -100,6 +101,9 @@ public:
 	CButtonST	m_btnHelp;
 	CButtonST	m_btnCancel;
 	CButtonST	m_btnMinimize;
+
+	CHyperLink	m_EMailLink;
+	CHyperLink	m_HomePageLink;
 
 	T_CRYPTO_DATA	m_crypto;	// ˆÃ†‰»î•ñ
 	HANDLE m_hCrypto;

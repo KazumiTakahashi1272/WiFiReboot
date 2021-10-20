@@ -79,7 +79,7 @@ IDI_OK                  ICON                    "res\\OK_32x32x8.ico"
 // Dialog
 //
 
-IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 251, 122
+IDD_WIFIREBOOT_DIALOG DIALOGEX 0, 0, 251, 136
 STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_BORDER
 EXSTYLE WS_EX_APPWINDOW
 FONT 10, "MS Sans Serif", 400, 0, 0x0
@@ -87,13 +87,15 @@ BEGIN
     PUSHBUTTON      "WI-Fi 再起動",IDC_WIFI_REBOOT,7,82,237,25
     COMBOBOX        IDC_CB_SSID,7,38,237,12,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT           "再起動するWiFiのSSID：",IDC_STATIC_SSID,7,29,80,8
-    CONTROL         "",IDC_REBOOT_PROG,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,107,237,7
+    CONTROL         "",IDC_REBOOT_PROG,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,108,237,7
     LTEXT           "パスワード：",IDC_STATIC_PWD,7,55,80,8
     EDITTEXT        IDC_PASSWORD,7,64,237,14,ES_AUTOHSCROLL
     CTEXT           "スタティック",IDC_STATIC_DESC,7,14,237,11
     PUSHBUTTON      "",IDCANCEL,234,1,10,9,BS_FLAT | NOT WS_TABSTOP
     PUSHBUTTON      "",IDC_MINIMIZE,222,1,10,9,BS_FLAT | NOT WS_TABSTOP
     PUSHBUTTON      "",IDC_HELPBTN,7,1,10,10,BS_FLAT
+    LTEXT           "http://home.384.jp/kazumit/",IDC_HOMEPAGELINK,7,128,237,8
+    LTEXT           "mailto:kazumit@384.com",IDC_EMAILLINK,7,119,237,8
 END
 
 IDD_MSG_DIALOG DIALOGEX 0, 0, 316, 202
@@ -113,8 +115,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,16,0,124
- PRODUCTVERSION 1,16,0,124
+ FILEVERSION 1,17,0,126
+ PRODUCTVERSION 1,17,0,126
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -132,12 +134,12 @@ BEGIN
             VALUE "Comments", "Wi-Fiインターフェースリセット"
             VALUE "CompanyName", "Takahashi Kazumi"
             VALUE "FileDescription", "Wi-Fi Reboot"
-            VALUE "FileVersion", "1.16.0.124"
+            VALUE "FileVersion", "1.17.0.126"
             VALUE "InternalName", "WiFiReboot.exe"
             VALUE "LegalCopyright", "Copyright (C) Takahashi Kazumi. All rights reserved."
             VALUE "OriginalFilename", "WiFiReboot.exe"
             VALUE "ProductName", "WiFiReboot.exe"
-            VALUE "ProductVersion", "1.16.0.124"
+            VALUE "ProductVersion", "1.17.0.126"
         END
     END
     BLOCK "VarFileInfo"
@@ -160,7 +162,6 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 244
         TOPMARGIN, 1
-        BOTTOMMARGIN, 114
     END
 
     IDD_MSG_DIALOG, DIALOG

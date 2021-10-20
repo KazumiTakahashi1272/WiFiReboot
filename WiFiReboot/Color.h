@@ -10,6 +10,7 @@
 #define BLACK      RGB(  0,  0,  0)
 #define WHITE      RGB(255,255,255)
 #define GRAY       RGB(192,192,192)
+#define PURPLE     RGB( 85,  26, 139) 
 
 #define BKCOLOR    RGB(175, 199, 223)
 

@@ -6,6 +6,7 @@
 #include "WiFiReboot.h"
 #include "WiFiRebootDlg.h"
 #include "MsgDlg.h"
+//#include "HyperLink.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,8 @@ static string item;
 // Log file name. File name should be change from here only
 //const string logFileName = X;
 //string g_strModulePath;
+#define IDS_MAILADDR	"mailto:kazumit@384.com"
+#define IDS_WEBADDR		"http://home.384.jp/kazumit/"
 
 #define wlan_notification_acm_scan_list_refresh		0x0000001a
 #define WLAN_PROFILE_GET_PLAINTEXT_KEY				0x00000004
@@ -127,6 +130,8 @@ void CWiFiRebootDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MINIMIZE, m_btnMinimize);
 	DDX_Control(pDX, IDC_STATIC_SSID, m_ctrlStaticSsid);
 	DDX_Control(pDX, IDC_STATIC_PWD, m_ctrlStaticPwd);
+	DDX_Control(pDX, IDC_EMAILLINK, m_EMailLink);
+	DDX_Control(pDX, IDC_HOMEPAGELINK, m_HomePageLink);
 }
 
 BEGIN_MESSAGE_MAP(CWiFiRebootDlg, CDialog)
@@ -187,7 +192,12 @@ BOOL CWiFiRebootDlg::OnInitDialog()
 	m_btnMinimize.DrawBorder( FALSE, TRUE );
 
 	// TODO: èâä˙âªÇÇ±Ç±Ç…í«â¡ÇµÇ‹Ç∑ÅB
+	m_EMailLink.SetURL( IDS_MAILADDR );
+	m_EMailLink.SetUnderline( CHyperLink::ulAlways );
 
+	// Set HyperLink for Home Page
+	m_HomePageLink.SetURL( IDS_WEBADDR );
+	m_HomePageLink.SetUnderline( CHyperLink::ulAlways );
 
 	m_ctrlDesc.SetTextColor( LIGHTBLUE );
 	m_ctrlDesc.SetBkColor( RGB(175, 199, 223) );
